@@ -1,4 +1,4 @@
-package com.taskmanager.demo.service;
+package com.m01project.taskmanager.demo.service;
 
 import org.springframework.stereotype.Service;
 
@@ -11,17 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class HelloWorldService {
 
-    /**
-     * Example method - returns a simple greeting
-     * @return greeting message
-     */
-    public String sayHello() {
-        return "Hello, World!";
-    }
+    // TODO: Add your practice methods here
 
     /**
-     * TODO: Add your practice methods below
-     * 
      * Examples you can implement:
      * - public String sayHelloTo(String name)
      * - public String getCurrentTime()
