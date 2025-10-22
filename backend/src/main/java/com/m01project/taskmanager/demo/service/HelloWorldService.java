@@ -2,6 +2,9 @@ package com.m01project.taskmanager.demo.service;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * HelloWorldService - A practice service for beginners
  * 
@@ -11,7 +14,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class HelloWorldService {
 
-    // TODO: Add your practice methods here
+    public String sayHello() {
+        return "Hello World!";
+    }
+
+    public String sayHelloTo(String name) {
+        if(name != null && !name.isBlank()) {
+            return "hello " + name.trim();
+        }
+        else {
+            return "hello nobody!";
+        }
+    }
+
+    public String getCurrentTime() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE;
+        return now.format(formatter);
+    }
 
     /**
      * Examples you can implement:
