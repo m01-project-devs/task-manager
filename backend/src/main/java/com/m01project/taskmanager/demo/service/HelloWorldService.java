@@ -11,12 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HelloWorldService {
 
-    // TODO: Add your practice methods here
-
-    /**
-     * Examples you can implement:
-     * - public String sayHelloTo(String name)
-     * - public String getCurrentTime()
-     * - public int addNumbers(int a, int b)
-     */
+   public String sayHello(){
+       return "Hello, World";
+   }
 }
