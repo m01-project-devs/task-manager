@@ -19,4 +19,7 @@ public class HelloWorldService {
      * - public String getCurrentTime()
      * - public int addNumbers(int a, int b)
      */
+    public String sayHello() {
+        return "Hello World!";
+    }
 }
