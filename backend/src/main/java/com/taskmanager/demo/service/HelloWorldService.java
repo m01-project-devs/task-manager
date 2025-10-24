@@ -1,8 +1,9 @@
 package com.taskmanager.demo.service;
 
-public class HelloWorldServices
+public class HelloWorldService
 {
     public String sayHello(String name) {
+
         if(name == null || name.trim().isEmpty())
         {
             return "Hello World!";
