@@ -1,6 +1,6 @@
 package com.m01project.taskmanager.demo.service;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class HelloWorldServiceTest {
@@ -9,6 +9,6 @@ public class HelloWorldServiceTest {
     void sayHello_ShouldReturnHelloWorld() {
         HelloWorldService service = new HelloWorldService();
         String result = service.sayHello();
-        assertEquals("Hello, World", result);
+        assertEquals("Hello World!", result);
     }
 }
