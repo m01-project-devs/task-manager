@@ -25,6 +25,11 @@ public class HelloWorldServiceTest {
         String result = service.sayHelloTo("hamza");
         assertEquals("hello hamza", result);
     }
+    @Test
+    void sayHelloToToylyTest() {
+        String result = service.sayHelloTo("Toyly");
+        assertEquals("hello Toyly", result);
+    }    
 
     @Test
     void sayHelloToAbdullahWithBlanksTest() {
