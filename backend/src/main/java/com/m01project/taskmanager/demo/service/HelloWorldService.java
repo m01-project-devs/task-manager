@@ -33,6 +33,15 @@ public class HelloWorldService {
         return now.format(formatter);
     }
 
+    package com.taskmanager.demo.service;
+
+    public class HelloWorldService {
+        public String sayHello() {
+            return "Hello guys!";  // <- i add this for modify text "Test Commit"
+        }
+    }
+
+
     /**
      * Examples you can implement:
      * - public String sayHelloTo(String name)
