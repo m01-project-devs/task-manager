@@ -27,16 +27,4 @@ public class HelloWorldService {
         }
     }
 
-    public String getCurrentTime() {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE;
-        return now.format(formatter);
-    }
-
-    /**
-     * Examples you can implement:
-     * - public String sayHelloTo(String name)
-     * - public String getCurrentTime()
-     * - public int addNumbers(int a, int b)
-     */
 }
