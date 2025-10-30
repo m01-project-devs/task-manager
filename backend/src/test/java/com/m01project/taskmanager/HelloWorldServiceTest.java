@@ -1,17 +1,17 @@
 package com.m01project.taskmanager;
 
-import com.m01project.taskmanager.demo.service.HelloWorldService;
+import com.m01project.taskmanager.demo.service.HelloService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HelloWorldServiceTest {
 
-    private HelloWorldService service;
+    private HelloService service;
 
     @BeforeEach
     void setUp() {
-        service = new HelloWorldService();
+        service = new HelloService();
     }
 
     @Test

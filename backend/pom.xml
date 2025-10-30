@@ -53,10 +53,10 @@
 		</dependency>
 
 		<!-- Security Starter: Adds authentication and authorization features -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-security</artifactId>-->
+<!--		</dependency>-->
 
 		<!-- Validation API: For validating DTOs and request bodies -->
 		<dependency>
