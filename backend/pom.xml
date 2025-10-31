@@ -40,7 +40,7 @@
 
 	<dependencies>
 
-		<!-- Web Starter: For building RESTful APIs using Spring MVC -->
+<!--		 Web Starter: For building RESTful APIs using Spring MVC -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -65,19 +65,19 @@
 			<version>${hibernate.validator.version}</version>
 		</dependency>
 
-		<!-- Flyway: For managing database schema migrations -->
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-			<version>${flyway.version}</version>
-		</dependency>
+<!--		&lt;!&ndash; Flyway: For managing database schema migrations &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>org.flywaydb</groupId>-->
+<!--			<artifactId>flyway-core</artifactId>-->
+<!--			<version>${flyway.version}</version>-->
+<!--		</dependency>-->
 
-		<!--  Flyway support for PostgreSQL -->
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-database-postgresql</artifactId>
-			<version>${flyway.version}</version>
-		</dependency>
+<!--		&lt;!&ndash;  Flyway support for PostgreSQL &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>org.flywaydb</groupId>-->
+<!--			<artifactId>flyway-database-postgresql</artifactId>-->
+<!--			<version>${flyway.version}</version>-->
+<!--		</dependency>-->
 
 		<!-- PostgreSQL Driver: For connecting Spring Boot with PostgreSQL database -->
 		<dependency>
@@ -88,11 +88,11 @@
 		</dependency>
 
 		<!--in-memory database-->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.h2database</groupId>-->
+<!--			<artifactId>h2</artifactId>-->
+<!--			<scope>runtime</scope>-->
+<!--		</dependency>-->
 
 
 		<!-- ⚡ DevTools: Enables hot-reload during development -->
@@ -140,13 +140,13 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- 🧱 Testcontainers: For running PostgreSQL inside Docker during tests -->
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>${testcontainers.version}</version>
-			<scope>test</scope>
-		</dependency>
+<!--		&lt;!&ndash; 🧱 Testcontainers: For running PostgreSQL inside Docker during tests &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>org.testcontainers</groupId>-->
+<!--			<artifactId>postgresql</artifactId>-->
+<!--			<version>${testcontainers.version}</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 
 	</dependencies>
 
