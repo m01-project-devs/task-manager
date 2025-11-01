@@ -65,12 +65,17 @@
 			<version>${hibernate.validator.version}</version>
 		</dependency>
 
-<!--		&lt;!&ndash; Flyway: For managing database schema migrations &ndash;&gt;-->
-<!--		<dependency>-->
-<!--			<groupId>org.flywaydb</groupId>-->
-<!--			<artifactId>flyway-core</artifactId>-->
-<!--			<version>${flyway.version}</version>-->
-<!--		</dependency>-->
+		<!-- Flyway: For managing database schema migrations -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>${flyway.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
 
 <!--		&lt;!&ndash;  Flyway support for PostgreSQL &ndash;&gt;-->
 <!--		<dependency>-->
