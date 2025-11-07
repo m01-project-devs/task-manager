@@ -33,11 +33,11 @@ public class HelloWorldService {
         return now.format(formatter);
     }
 
-    /**
-     * Examples you can implement:
-     * - public String sayHelloTo(String name)
-     * - public String getCurrentTime()
-     * - public int addNumbers(int a, int b)
-     */
-    
+    public String getGreetingWithTime(String name) {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String time = now.format(formatter);
+        String guestName = name != null && !name.isBlank() ? name : "Guest";
+        return String.format("Hello %s! Current time is %s", guestName, time);
+    }
 }
