@@ -69,6 +69,12 @@ class HelloWorldServiceTest {
         String result = service.sayHelloTo("Shermatov");
         assertEquals("hello Shermatov", result);
     }
+
+    @Test
+    void sayHelloToShermatovTest2() {
+        String result = service.sayHelloTo("Shermatov2");
+        assertEquals("hello Shermatov2", result);
+    }
 }
 
 
