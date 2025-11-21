@@ -73,7 +73,7 @@ class HelloWorldServiceTest {
     @Test
     void testGetCurrentTime() {
         String result = service.getCurrentTime();
-        assertEquals("2025-11-21", result);
+        assertEquals("2025-11-21T10:15:30", result);
     }
 
     @Test
