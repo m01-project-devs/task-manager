@@ -69,5 +69,16 @@ class HelloWorldServiceTest {
         String result = service.sayHelloTo("Shermatov");
         assertEquals("hello Shermatov", result);
     }
+
+    @Test
+    void testGetCurrentTime() {
+        String result = service.getCurrentTime();
+        assertEquals("2025-11-21", result);
+    }
+
+    @Test
+    void getGreetingWithTime() {
+        //.....
+    }
 }
 
