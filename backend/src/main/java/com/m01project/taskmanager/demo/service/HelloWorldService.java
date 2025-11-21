@@ -29,7 +29,7 @@ public class HelloWorldService {
 
     public String getCurrentTime() {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         return now.format(formatter);
     }
 
