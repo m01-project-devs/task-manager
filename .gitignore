@@ -35,3 +35,12 @@ build/
 
 ### macOS files ###
 .DS_Store
+
+### Environment files (DO NOT COMMIT SECRETS) ###
+.env
+.env.*
+!.env.dist
+
+### Frontend build files ###
+node_modules/
+dist/
