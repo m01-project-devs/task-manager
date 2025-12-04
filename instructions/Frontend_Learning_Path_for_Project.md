@@ -37,8 +37,6 @@ frontend/
   ├── src/
   │     ├── components/
   │     ├── pages/
-  │     ├── hooks/
-  │     ├── utils/
   │     ├── App.jsx
   │     └── main.jsx
   ├── .env
@@ -81,13 +79,13 @@ frontend/
 1. `frontend/.env` dosyasını oluşturun:
 
 ```env
-VITE_API_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8080/api
 ```
 
 2. React kodunda kullanın:
 
 ```js
-const API_BASE = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 ```
 
 3. Dev ve production ortamlarını ayırt edin — URL hard-coded olmasın
@@ -103,8 +101,6 @@ frontend/
   ├── src/
   │     ├── components/
   │     ├── pages/
-  │     ├── hooks/
-  │     ├── utils/
   │     ├── App.jsx
   │     └── main.jsx
   ├── .env
@@ -116,8 +112,6 @@ frontend/
 
 * Bileşenleri `components/` içine koyun
 * Sayfaları (HomePage gibi) `pages/` içine koyun
-* Tekrar kullanılabilir fonksiyonlar için `utils/` ve `hooks/` kullanın
-* API çağrılarını `utils/api.js` dosyasında toplayın ve `import.meta.env.VITE_API_URL` kullanın
 
 ---
 
