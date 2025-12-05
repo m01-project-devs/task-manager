@@ -19,6 +19,7 @@ target/
 *.iws
 *.iml
 *.ipr
+out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,7 +36,13 @@ build/
 
 ### macOS files ###
 .DS_Store
+.AppleDouble
+.LSOverride
 
+### Environment files (DO NOT COMMIT SECRETS) ###
+.env
+.env.*
+!.env.dist
 
 ### FRONTEND ###
 # Logs
@@ -47,17 +54,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+node_modules/
+dist/
+dist-ssr/
 *.local
-.env
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
