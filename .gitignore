@@ -23,10 +23,9 @@ out/
 
 ### NetBeans ###
 /nbproject/private/
-/nbbuild/
-/dist/
+<AzureIAASDatabaseConnectionAndSQLString>
 /nbdist/
-/.nb-gradle/
+<AzureIAASDatabaseConnectionAndSQLString>
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
