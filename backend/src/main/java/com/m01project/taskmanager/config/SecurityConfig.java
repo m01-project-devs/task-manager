@@ -23,6 +23,7 @@ public class SecurityConfig {
         this.authenticationProvider = authenticationProvider;
     }
 
+    @SuppressWarnings("java:S4507") // CSRF disabled intentionally for stateless JWT API
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
