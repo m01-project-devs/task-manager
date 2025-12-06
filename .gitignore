@@ -19,6 +19,8 @@ target/
 *.iws
 *.iml
 *.ipr
+out/
+
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,3 +37,14 @@ build/
 
 ### macOS files ###
 .DS_Store
+.AppleDouble
+.LSOverride
+
+### Environment files (DO NOT COMMIT SECRETS) ###
+.env
+.env.*
+!.env.dist
+
+### Frontend build files ###
+node_modules/
+dist/
