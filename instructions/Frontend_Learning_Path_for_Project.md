@@ -1,36 +1,36 @@
-# 🧑‍💻 Frontend Öğrenme Yolu
+# 🧑‍💻 Frontend Learning Path
 
-*(React + Vite + MUI temelinde)*
+*(Based on React + Vite + MUI)*
 
-Bu belge, ekip üyelerinin **frontend teknolojilerini hızlıca öğrenmesi** için hazırlanmıştır.
-Projemiz React 18, Vite ve Material UI (MUI) kullanmaktadır.
+This document is prepared to help team members **quickly learn frontend technologies**.  
+Our project uses React 18, Vite, and Material UI (MUI).
 
 ---
 
-## 1️⃣ React 18 — Temel Kavramlar
+## 1️⃣ React 18 — Basic Concepts
 
-**Amaç:** Bileşenler (components), JSX, props, state ve hooks ile çalışmayı öğrenmek.
+**Goal:** Learn to work with components, JSX, props, state, and hooks.
 
-* 📘 **Resmî Dokümantasyon:** [react.dev](https://react.dev)
+* 📘 **Official Documentation:** [react.dev](https://react.dev)
 * 🧑‍💻 **Tutorial:** [Intro to React – React Official Tutorial](https://react.dev/learn)
-* ⚙️ **Hooks (useState, useEffect…):** [Hooks Girişi](https://react.dev/learn/hooks-intro)
+* ⚙️ **Hooks (useState, useEffect…):** [Hooks Introduction](https://react.dev/learn/hooks-intro)
 
-**Uygulama Talimatları:**
+**Practical Instructions:**
 
-* Fonksiyonel bileşenler oluşturun
-* State kullanarak UI’yi dinamik hale getirin
-* Props ile veri aktarımını deneyin
+* Create functional components  
+* Make the UI dynamic using state  
+* Practice passing data with props  
 
 ---
 
-## 2️⃣ Vite + Proje Yapısı
+## 2️⃣ Vite + Project Structure
 
-**Amaç:** Vite ile React projesinin yapısını anlamak ve dev server ile çalışmayı öğrenmek.
+**Goal:** Understand the structure of a React project created with Vite and learn to work with the dev server.
 
-* 🌐 **Vite Resmî Dokümantasyon:** [vitejs.dev](https://vitejs.dev/)
-* ⚡ **React + Vite Başlangıç Kılavuzu:** [İlk projenizi oluşturun](https://vitejs.dev/guide/#scaffolding-your-first-vite-project)
+* 🌐 **Vite Official Documentation:** [vitejs.dev](https://vitejs.dev/)
+* ⚡ **React + Vite Starter Guide:** [Create your first Vite project](https://vitejs.dev/guide/#scaffolding-your-first-vite-project)
 
-**Proje yapısı örneği:**
+**Example project structure:**
 
 ```
 frontend/
@@ -44,57 +44,57 @@ frontend/
   └── README.md
 ```
 
-**Uygulama Talimatları:**
+**Practical Instructions:**
 
-* `npm install` → `npm run dev` ile dev serveri başlatın
-* `src/components` ve `src/pages` klasörlerini inceleyin
-* `.env` dosyası ile API_URL kullanımını test edin
+* Run `npm install` → `npm run dev` to start the dev server  
+* Review the `src/components` and `src/pages` folders  
+* Test using `.env` to configure API_URL  
 
 ---
 
 ## 3️⃣ Material UI (MUI)
 
-**Amaç:** UI bileşenlerini kullanmayı, theme ve CssBaseline’i öğrenmek.
+**Goal:** Learn using UI components, theming, and CssBaseline.
 
-* 🎨 **MUI Başlangıç:** [mui.com getting started](https://mui.com/material-ui/getting-started/overview/)
-* 🔘 **Bileşenler Örneği (Button, AppBar, …):** [MUI Components](https://mui.com/material-ui/react-button/)
-* 🎨 **Theming & Özelleştirme:** [MUI Theming](https://mui.com/material-ui/customization/theming/)
+* 🎨 **MUI Getting Started:** [mui.com getting started](https://mui.com/material-ui/getting-started/overview/)
+* 🔘 **Component Examples (Button, AppBar, …):** [MUI Components](https://mui.com/material-ui/react-button/)
+* 🎨 **Theming & Customization:** [MUI Theming](https://mui.com/material-ui/customization/theming/)
 
-**Uygulama Talimatları:**
+**Practical Instructions:**
 
-* `AppBar`, `Button`, `Typography`, `Container` bileşenlerini deneyin
-* `ThemeProvider` ve `CssBaseline` ekleyin
-* Arka plan (background color), container boyutu ve renk değişikliklerini uygulayın
+* Try `AppBar`, `Button`, `Typography`, `Container` components  
+* Add `ThemeProvider` and `CssBaseline`  
+* Apply background color, container sizing, and color customizations  
 
 ---
 
 ## 4️⃣ Environment Variables & API URL
 
-**Amaç:** Backend URL’lerini kodda hard-coded yapmadan `.env` ile konfigüre etmek.
+**Goal:** Configure backend URLs using `.env` instead of hard-coding them.
 
-* 🔧 **Vite Env Dokümantasyonu:** [vitejs.dev — Env and Modes](https://vitejs.dev/guide/env-and-mode.html)
+* 🔧 **Vite Env Documentation:** [vitejs.dev — Env and Modes](https://vitejs.dev/guide/env-and-mode.html)
 
-**Uygulama Talimatları:**
+**Practical Instructions:**
 
-1. `frontend/.env` dosyasını oluşturun:
+1. Create `frontend/.env`:
 
 ```env
 VITE_API_BASE_URL=http://localhost:8080/api
 ```
 
-2. React kodunda kullanın:
+2. Use it in React:
 
 ```js
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 ```
 
-3. Dev ve production ortamlarını ayırt edin — URL hard-coded olmasın
+3. Separate dev and production environments — avoid hard-coded URLs.
 
 ---
 
-## 5️⃣ Projeye Özel Yapı
+## 5️⃣ Project-Specific Structure
 
-**Klasör yapısı:**
+**Folder structure:**
 
 ```
 frontend/
@@ -108,34 +108,34 @@ frontend/
   └── README.md
 ```
 
-**Talimatlar:**
+**Instructions:**
 
-* Bileşenleri `components/` içine koyun
-* Sayfaları (HomePage gibi) `pages/` içine koyun
+* Place components inside the `components/` folder
+* Place pages (e.g., HomePage) inside the `pages/` folder
 
 ---
 
-## 🧭 Başlangıç (Getting Started)
+## 🧭 Getting Started
 
-1. Repo’yu klonlayın:
+1. Clone the repository:
 
 ```bash
 git clone <repo-url>
 cd frontend
 ```
 
-2. Paketleri yükleyin:
+2. Install packages:
 
 ```bash
 npm install
 ```
 
-3. Local dev serveri başlatın:
+3. Start the local dev server:
 
 ```bash
 npm run dev
 ```
 
-4. `.env` oluşturup `VITE_API_URL` değerini ayarlayın → Backend ile bağlantıyı kurun
+4. Create `.env` and set the `VITE_API_URL` → connect to backend
 
 ---
