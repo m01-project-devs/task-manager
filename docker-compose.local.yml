@@ -6,7 +6,7 @@ services:
     container_name: taskmanager_postgres
     restart: unless-stopped
 
-    # Load credentials from .env file
+    # Load credential from .env file
     env_file: .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
