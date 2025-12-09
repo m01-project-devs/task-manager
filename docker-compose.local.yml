@@ -1,7 +1,10 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:15-alpine
     container_name: task-manager-db
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -14,6 +17,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - task-manager-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     image: eclipse-temurin:21-jdk
@@ -33,10 +41,10 @@ services:
       - postgres
     networks:
       - task-manager-network
-    command: sh -c "cd /app && ./mvnw spring-boot:run"
+    command: sh -c "./mvnw spring-boot:run"
 
   frontend:
-    image: node:18-alpine
+    image: node:20-alpine
     container_name: task-manager-frontend
     working_dir: /app
     volumes:
