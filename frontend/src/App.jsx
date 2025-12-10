@@ -20,9 +20,6 @@ function App() {
         <Typography variant="h3" gutterBottom>
           Welcome to Frontend, Abiler!
         </Typography>
-         <Typography>
-             API base URL: {API_BASE_URL}
-         </Typography>
         <Button variant="contained">MUI Works!</Button>
         <HomePage/>
       </Container>
