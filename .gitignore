@@ -21,13 +21,11 @@ target/
 *.ipr
 out/
 
-
 ### NetBeans ###
 /nbproject/private/
-/nbbuild/
-/dist/
+<AzureIAASDatabaseConnectionAndSQLString>
 /nbdist/
-/.nb-gradle/
+<AzureIAASDatabaseConnectionAndSQLString>
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -45,6 +43,28 @@ build/
 .env.*
 !.env.dist
 
-### Frontend build files ###
+### FRONTEND ###
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
 node_modules/
+/frontend/.vite
 dist/
+dist-ssr/
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
