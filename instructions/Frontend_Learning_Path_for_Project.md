@@ -79,13 +79,13 @@ frontend/
 1. Create `frontend/.env`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_URL=http://localhost:8080/api
 ```
 
 2. Use it in React:
 
 ```js
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = import.meta.env.VITE_API_URL;
 ```
 
 3. Separate dev and production environments — avoid hard-coded URLs.
