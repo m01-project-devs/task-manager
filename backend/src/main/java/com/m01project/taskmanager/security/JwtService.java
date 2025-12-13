@@ -1,9 +1,9 @@
 package com.m01project.taskmanager.security;
 
+import com.m01project.taskmanager.domain.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
