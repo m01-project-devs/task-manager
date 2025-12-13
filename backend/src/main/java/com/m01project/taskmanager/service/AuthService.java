@@ -31,8 +31,6 @@ public class AuthService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
 
-
-
         User saved = userRepository.save(user);
 
         return new UserResponse(saved.getEmail());

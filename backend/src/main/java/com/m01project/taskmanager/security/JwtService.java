@@ -1,9 +1,9 @@
 package com.m01project.taskmanager.security;
 
+import com.m01project.taskmanager.domain.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -15,8 +15,6 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String secret;
-
-
 
     public String extractUsername(String token) {
         try {
@@ -39,7 +37,6 @@ public class JwtService {
         }
     }
 
-
     private Claims getClaims(String token) {
         return Jwts
                 .parserBuilder()
@@ -52,6 +49,4 @@ public class JwtService {
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
-
-
 }

@@ -1,5 +1,6 @@
 package com.m01project.taskmanager.security;
 
+import com.m01project.taskmanager.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
@@ -42,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                var user = userRepository.findByEmail(email).orElse(null);
+                var user = userRepository.getUserByEmail(email).orElse(null);
 
                 if (user != null && jwtService.isTokenValid(token, user)) {
                     var authToken = new UsernamePasswordAuthenticationToken(
