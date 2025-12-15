@@ -1,53 +1,52 @@
 package com.m01project.taskmanager.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
+import com.m01project.taskmanager.domain.User;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.function.Function;
 
 @Service
 public class JwtService {
 
     @Value("${jwt.secret}")
-    private String secretKey;
+    private String secret;
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return getClaims(token).getSubject();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername())
-                && !isTokenExpired(token);
+    public boolean isTokenValid(String token, User user) {
+        try {
+            String username = extractUsername(token);
+            if (username == null || !username.equals(user.getEmail())) {
+                return false;
+            }
+            Claims claims = getClaims(token);
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration)
-                .before(new Date());
-    }
-
-    private <T> T extractClaim(String token, Function<Claims, T> resolver) {
-        Claims claims = extractAllClaims(token);
-        return resolver.apply(claims);
-    }
-
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+    private Claims getClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private Key getSignInKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 }
