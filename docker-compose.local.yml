@@ -62,6 +62,19 @@ services:
       - task-manager-network
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
 
+  # docker-compose.test.yml
+
+  postgres-test:
+    image: postgres:16
+    container_name: task-manager-test-db
+    environment:
+      POSTGRES_DB: taskmanager_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+
+
 volumes:
   postgres_data:
 
