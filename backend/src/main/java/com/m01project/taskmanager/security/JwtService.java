@@ -16,8 +16,6 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-
-
     public String extractUsername(String token) {
         try {
             return getClaims(token).getSubject();
@@ -39,7 +37,6 @@ public class JwtService {
         }
     }
 
-
     private Claims getClaims(String token) {
         return Jwts
                 .parserBuilder()
@@ -52,6 +49,4 @@ public class JwtService {
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
-
-
 }

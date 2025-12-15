@@ -2,33 +2,82 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15
-    container_name: taskmanager_postgres
+    image: postgres:15-alpine
+    container_name: task-manager-db
     restart: unless-stopped
-
-    # Load credential from .env file
-    env_file: .env
+    profiles: ["all", "db", "backend-db", "frontend-db"]
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
     ports:
-      - "5432:5432"     # Expose Postgres to localhost:5432
-
+      - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - task-manager-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  backend:
+    image: eclipse-temurin:21-jdk
+    container_name: task-manager-backend
+    working_dir: /app
+    profiles: ["all", "backend-db"]
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - task-manager-network
+    command: sh -c "./mvnw spring-boot:run"
+
+  frontend:
+    image: node:20-alpine
+    container_name: task-manager-frontend
+    working_dir: /app
+    profiles: ["all", "frontend-db"]
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+    networks:
+      - task-manager-network
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+  # docker-compose.test.yml
+
+  postgres-test:
+    image: postgres:16
+    container_name: task-manager-test-db
+    environment:
+      POSTGRES_DB: taskmanager_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+
+
 volumes:
-  postgres-data:
-    name: taskmanager_postgres_data
+  postgres_data:
 
 networks:
-  default:
-    name: taskmanager_local_net
+  task-manager-network:
+    driver: bridge
