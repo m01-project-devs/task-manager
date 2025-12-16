@@ -17,6 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
 
+
         return User.builder()
                 .username("admin")
                 .password("{noop}admin123") // no password encoder (TEST ONLY)
