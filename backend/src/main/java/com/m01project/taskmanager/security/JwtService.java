@@ -16,6 +16,9 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
+
+    private static final long EXPIRATION_TIME = 30 * 60 * 1000;
+
     public String extractUsername(String token) {
         try {
             return getClaims(token).getSubject();
@@ -48,5 +51,19 @@ public class JwtService {
 
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
+
+
+    public String generateToken(String email) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + EXPIRATION_TIME);
+
+        return Jwts.builder()
+                .setSubject(email) // user identity
+                .setIssuedAt(now)   //token creation time
+                .setExpiration(expiry)
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 }
