@@ -29,7 +29,7 @@ public class JwtService {
     public boolean isTokenValid(String token, User user) {
         try {
             String username = extractUsername(token);
-            if (username == null || !username.equals(user.getEmail())) {
+            if (username == null || !username.equals(user.getClass())) {
                 return false;
             }
             Claims claims = getClaims(token);
@@ -54,4 +54,7 @@ public class JwtService {
     }
 
 
+    public boolean isTokenValid(String token, com.m01project.taskmanager.domain.User user) {
+        return false;
+    }
 }

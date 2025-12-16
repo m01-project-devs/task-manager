@@ -3,8 +3,10 @@ package com.m01project.taskmanager.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -34,15 +36,8 @@ public class User {
     @Column (name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    /**
-     * @PrePersist: This method is automatically called by JPA right before
-     * the entity is inserted into the database. It ensures that the
-     * createdAt field is always set, even if the value is not provided manually.
-     * This makes the entity independent of the database default timestamp
-     * and guarantees consistent audit behavior across environments.
-     */
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return java.util.List.of();
     }
+
 }
