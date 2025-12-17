@@ -16,8 +16,9 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-
+    // JWT token expiration time: 30 minutes (1_800_000 ms = 1_800 seconds = 30 minutes)
     private static final long EXPIRATION_TIME = 30 * 60 * 1000;
+    //                                           |______if you wanna change expiration time change this, ex: you wanna 5 min -> 5 * 60 * 1000 -> expiration time will be 5 min
 
     public String extractUsername(String token) {
         try {
