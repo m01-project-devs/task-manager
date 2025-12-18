@@ -1,6 +1,8 @@
 package com.m01project.taskmanager.controller;
 
+import com.m01project.taskmanager.dto.request.LoginRequestDto;
 import com.m01project.taskmanager.dto.request.RegisterRequest;
+import com.m01project.taskmanager.dto.response.LoginResponseDto;
 import com.m01project.taskmanager.dto.response.UserResponse;
 import com.m01project.taskmanager.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +30,12 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED) // 201
                 .body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto)
+    {
+        LoginResponseDto response = authService.login(loginRequestDto);
+        return ResponseEntity.ok(response);
     }
 }
