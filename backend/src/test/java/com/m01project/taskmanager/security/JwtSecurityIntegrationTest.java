@@ -1,20 +1,15 @@
 package com.m01project.taskmanager.security;
 
 import com.jayway.jsonpath.JsonPath;
-import com.m01project.taskmanager.domain.User;
-import com.m01project.taskmanager.repository.UserRepository;
+import com.m01project.taskmanager.BaseIntegrationTest;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
@@ -25,10 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-class JwtSecurityIntegrationTest {
+class JwtSecurityIntegrationTest extends BaseIntegrationTest {
 
     private static final String TEST_JWT_SECRET =
             "test-jwt-secret-test-jwt-secret-test-jwt-secret";
@@ -36,36 +28,20 @@ class JwtSecurityIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @BeforeEach
     void setup() {
-        userRepository.deleteAll();
-
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setFirstName("Test");
-        user.setLastName("User");
-
-        userRepository.save(user);
+        createTestUser();
     }
 
     @Test
     void shouldAllowAccessToLoginWithoutJwt() throws Exception {
         mockMvc.perform(post("/api/auth/login"))
                 .andExpect(status().isUnauthorized());
-        // Unauthorized due to missing credentials, NOT JWT
     }
 
     @Test
     void shouldAllowAccessWithValidJwt() throws Exception {
 
-        // 1️⃣ Login
         String loginPayload = """
                 {
                   "email": "test@example.com",
@@ -79,11 +55,10 @@ class JwtSecurityIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // 2️⃣ Extract token
-        String response = result.getResponse().getContentAsString();
-        String token = JsonPath.read(response, "$.token");
+        String token = JsonPath.read(
+                result.getResponse().getContentAsString(), "$.token"
+        );
 
-        // 3️⃣ Access protected endpoint
         mockMvc.perform(get("/api/tasks")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
@@ -98,7 +73,7 @@ class JwtSecurityIntegrationTest {
     @Test
     void shouldRejectInvalidJwt() throws Exception {
         mockMvc.perform(get("/api/tasks")
-                        .header("Authorization", "Bearer invalid.token.value"))
+                        .header("Authorization", "Bearer invalid.token"))
                 .andExpect(status().isUnauthorized());
     }
 
