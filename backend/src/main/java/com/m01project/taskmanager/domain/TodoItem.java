@@ -19,7 +19,6 @@ public class TodoItem {
     @Column(nullable = false)
     private String title;
 
-    @Column()
     private String description;
 
     @Column(nullable = false)
