@@ -1,30 +1,50 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Box } from "@mui/material";
-import RegisterPage from "./pages/RegisterPage";
+
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+import AuthLayout from "./components/layout/AuthLayout";
+import HomeLayout from "./components/layout/HomeLayout";
 
 function App() {
   return (
     <BrowserRouter>
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundImage: "url('./public/background.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <Routes>
-          <Route path="/" element={<Navigate to="/register" replace />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/homepage" element={<HomePage />} />
-        </Routes>
-      </Box>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        {/* AUTH PAGES */}
+        <Route
+          path="/login"
+          element={
+            <AuthLayout>
+              <LoginPage />
+            </AuthLayout>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <AuthLayout>
+              <RegisterPage />
+            </AuthLayout>
+          }
+        />
+
+        {/* HOME */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <HomeLayout>
+                <HomePage />
+              </HomeLayout>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 }

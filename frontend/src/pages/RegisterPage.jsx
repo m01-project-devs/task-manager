@@ -10,6 +10,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { authTextFieldSx } from "../components/form/TextFieldStyles";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -108,6 +109,8 @@ const RegisterPage = () => {
               margin="normal"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
+              required
+              sx={authTextFieldSx}
             />
             <TextField
               label="Last Name"
@@ -116,6 +119,8 @@ const RegisterPage = () => {
               margin="normal"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
+              required
+              sx={authTextFieldSx}
             />
             <TextField
               label="Email"
@@ -124,6 +129,8 @@ const RegisterPage = () => {
               margin="normal"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+              sx={authTextFieldSx}
             />
             <TextField
               label="Password"
@@ -133,6 +140,8 @@ const RegisterPage = () => {
               margin="normal"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              sx={authTextFieldSx}
             />
             <TextField
               label="Confirm Password"
@@ -142,6 +151,8 @@ const RegisterPage = () => {
               margin="normal"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              sx={authTextFieldSx}
             />
             <Button
               type="submit"
