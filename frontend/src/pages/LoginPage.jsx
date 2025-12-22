@@ -10,6 +10,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { authTextFieldSx } from "../components/form/TextFieldStyles";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -24,11 +25,11 @@ const LoginPage = () => {
     e.preventDefault();
     setError("");
 
-    // Client-side validation
     if (!email.match(/^\S+@\S+\.\S+$/)) {
       setError("Please enter a valid email.");
       return;
     }
+
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
@@ -47,10 +48,12 @@ const LoginPage = () => {
         throw new Error("Invalid credentials");
       }
 
+      localStorage.setItem("isAuth", "true");
+
       setSuccess(true);
 
       setTimeout(() => {
-        navigate("/home"); 
+        navigate("/home");
       }, 1000);
     } catch (err) {
       setError(err.message || "Something went wrong.");
@@ -90,6 +93,7 @@ const LoginPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            sx={authTextFieldSx}
           />
           <TextField
             label="Password"
@@ -100,6 +104,7 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            sx={authTextFieldSx}
           />
           <Button
             type="submit"
