@@ -1,30 +1,51 @@
-import { AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
-import { API_BASE_URL } from './config/apiConfig'
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+import AuthLayout from "./components/layout/AuthLayout";
+import HomeLayout from "./components/layout/HomeLayout";
 
 function App() {
-  console.log('API_BASE_URL:', API_BASE_URL );
-
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            My React + MUI App
-          </Typography>
-          <Button color="inherit" sx={{ background: "green", }}>Login</Button>
-        </Toolbar>
-      </AppBar>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-      <Container sx={{ background: '#DBE9F4', minHeight: "100vh" }} maxWidth={false}>
-        <Typography variant="h3" gutterBottom>
-          Welcome to Frontend, Abiler!
-        </Typography>
-        <Button variant="contained">MUI Works!</Button>
-        <HomePage/>
-      </Container>
-      
-    </>
+        {/* AUTH PAGES */}
+        <Route
+          path="/login"
+          element={
+            <AuthLayout>
+              <LoginPage />
+            </AuthLayout>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <AuthLayout>
+              <RegisterPage />
+            </AuthLayout>
+          }
+        />
+
+        {/* HOME */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <HomeLayout>
+                <HomePage />
+              </HomeLayout>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
