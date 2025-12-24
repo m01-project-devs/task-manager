@@ -45,7 +45,7 @@ public class AuthService {
     public LoginResponseDto login(LoginRequestDto request) {
 
         // Find user by email
-        User user = userRepository.getUserByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
 
