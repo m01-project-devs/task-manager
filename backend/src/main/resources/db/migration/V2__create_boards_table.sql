@@ -9,4 +9,5 @@ CREATE TABLE board (
     CONSTRAINT fk_board_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
+
 );
