@@ -3,7 +3,6 @@ package com.m01project.taskmanager.config;
 import com.m01project.taskmanager.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,7 +25,6 @@ public class SecurityConfig {
     }
 
     @SuppressWarnings("java:S4507") // CSRF disabled intentionally for stateless JWT API
-    @Profile("dev")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
