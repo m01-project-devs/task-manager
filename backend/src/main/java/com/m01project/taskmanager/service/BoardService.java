@@ -5,6 +5,7 @@ import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.BoardResponse;
 import com.m01project.taskmanager.dto.CreateBoardRequest;
 import com.m01project.taskmanager.repository.BoardRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,13 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
-
-    public BoardService(BoardRepository boardRepository) {
-        this.boardRepository = boardRepository;
-    }
 
     // CREATE BOARD
     public BoardResponse createBoard(CreateBoardRequest request, User user) {
