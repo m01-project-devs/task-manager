@@ -1,6 +1,7 @@
 package com.m01project.taskmanager.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.m01project.taskmanager.domain.Base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +18,10 @@ import java.util.List;
 @Entity
 @Table (name = "users")
 public class User implements UserDetails {
+
+    public User(String email, String password, String firstName, String lastName) {
+        this(null, email, password, firstName, lastName, null);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

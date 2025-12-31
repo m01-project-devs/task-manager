@@ -1,7 +1,12 @@
 package com.m01project.taskmanager.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@AllArgsConstructor
 public class UserCreateRequestDto {
 
     @NotBlank(message = "Email can not be null or blank.")
