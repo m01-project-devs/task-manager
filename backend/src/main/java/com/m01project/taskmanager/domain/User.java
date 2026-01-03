@@ -5,6 +5,7 @@ import com.m01project.taskmanager.domain.Base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -20,12 +21,12 @@ import java.util.List;
 public class User implements UserDetails {
 
     public User(String email, String password, String firstName, String lastName) {
-        this(null, email, password, firstName, lastName, null);
+        this(null, email, password, firstName, lastName, null, null);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 
     @Id
@@ -44,6 +45,10 @@ public class User implements UserDetails {
 
     @Column (nullable = false, name = "last_name")
     private String lastName;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private Role role = Role.USER; // default user role.
 
     @Column (name = "created_at", nullable = false)
     private LocalDateTime createdAt;

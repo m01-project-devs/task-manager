@@ -79,7 +79,7 @@ public class UserServiceImplTest {
     @Test
     void deleteUser_WhenUserExist() {
         String email = "test@example.com";
-        User user = new User(1L, "test@example.com", "12345678", "Joe", "Duo", null);
+        User user = new User(1L, "test@example.com", "12345678", "Joe", "Duo", null, null);
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         boolean result = userService.delete(email);
         assertThat(result).isTrue();

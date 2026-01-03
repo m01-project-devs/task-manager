@@ -25,7 +25,7 @@ public class UserController {
     @GetMapping("/{email}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable @Valid @NotBlank String email) {
         return userService.findByEmail(email)
-                .map(user -> new UserResponseDto(user.getEmail(), user.getFirstName(), user.getLastName()))
+                .map(user -> new UserResponseDto(user.getEmail(), user.getFirstName(), user.getLastName(), user.getRole().toString()))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -38,7 +38,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserCreateRequestDto request) {
         User savedUser = userService.create(request);
-        UserResponseDto response = new UserResponseDto(savedUser.getEmail(), savedUser.getFirstName(), savedUser.getLastName());
+        UserResponseDto response = new UserResponseDto(savedUser.getEmail(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getRole().toString());
         URI location = URI.create("/api/users/" + savedUser.getEmail());
         return ResponseEntity.created(location).body(response);
     }
@@ -47,7 +47,7 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable @Valid String email,
                                                       @RequestBody @Valid UserUpdateRequestDto request) {
         User updated = userService.update(email, request);
-        UserResponseDto response = new UserResponseDto(updated.getEmail(), updated.getFirstName(), updated.getLastName());
+        UserResponseDto response = new UserResponseDto(updated.getEmail(), updated.getFirstName(), updated.getLastName(), updated.getRole().toString());
         return ResponseEntity.ok(response);
     }
 
