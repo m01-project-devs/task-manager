@@ -17,15 +17,15 @@ export const authTextFieldSx = {
 
     // ---------------- AUTOFILL ----------------
     "& input:-webkit-autofill": {
-      WebkitBoxShadow: "0 0 0 1000px rgba(2, 162, 255, 0.7) inset !important", 
+      WebkitBoxShadow: "0 0 0 1000px rgba(2, 162, 255, 0.1) inset !important", 
       WebkitTextFillColor: "black !important", 
     },
     "& input:-webkit-autofill:hover": {
-      WebkitBoxShadow: "0 0 0 1000px rgba(2, 162, 255, 0.7) inset !important",
+      WebkitBoxShadow: "0 0 0 1000px rgba(2, 162, 255, 0.1) inset !important",
       WebkitTextFillColor: "black !important",
     },
     "& input:-webkit-autofill:focus": {
-      WebkitBoxShadow: "0 0 0 1000px rgba(2, 162, 255, 0.7) inset !important",
+      WebkitBoxShadow: "0 0 0 1000px rgba(2, 162, 255, 0.1) inset !important",
       WebkitTextFillColor: "black !important",
     },
   },

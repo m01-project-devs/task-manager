@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { authTextFieldSx } from "../components/form/TextFieldStyles";
+import { API_BASE_URL } from "../config/apiConfig";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -48,12 +49,15 @@ const LoginPage = () => {
         throw new Error("Invalid credentials");
       }
 
+      const data = await response.json();
+      localStorage.setItem("token", data.token)
       localStorage.setItem("isAuth", "true");
+      localStorage.setItem("email", email);
 
       setSuccess(true);
 
       setTimeout(() => {
-        navigate("/home");
+        navigate("/boards");
       }, 1000);
     } catch (err) {
       setError(err.message || "Something went wrong.");
@@ -120,7 +124,7 @@ const LoginPage = () => {
 
         <Typography variant="body2" sx={{ mt: 2 }}>
           Don't have an account?{" "}
-          <Link component={RouterLink} sx={{ color: "white" }} to="/register">
+          <Link component={RouterLink}  to="/register">
             Register
           </Link>
         </Typography>
