@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                var user = userRepository.getUserByEmail(email).orElse(null);
+                var user = userRepository.findByEmail(email).orElse(null);
 
                 if (user != null && jwtService.isTokenValid(token, user)) {
                     var authToken = new UsernamePasswordAuthenticationToken(
@@ -73,9 +73,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-
-            filterChain.doFilter(request, response);
-
         } catch (Exception ex) {
             // DEV-12 compliant safe error response
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -84,5 +81,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     { "error": "Invalid or expired token" }
                     """);
         }
+        filterChain.doFilter(request, response);
     }
 }

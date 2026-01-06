@@ -1,8 +1,8 @@
 package com.m01project.taskmanager.controller;
 
 import com.m01project.taskmanager.domain.User;
-import com.m01project.taskmanager.dto.BoardResponse;
-import com.m01project.taskmanager.dto.CreateBoardRequest;
+import com.m01project.taskmanager.dto.response.BoardResponse;
+import com.m01project.taskmanager.dto.request.CreateBoardRequest;
 import com.m01project.taskmanager.service.BoardService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
