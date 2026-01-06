@@ -1,0 +1,16 @@
+node_modules
+.git
+.gitignore
+README.md
+CONTRIBUTING.md
+.env
+.mvn
+frontend/
+instructions/
+docker-compose.local.yml
+run-docker.sh
+stop-docker.sh
+.DS_Store
+*.log
+.idea
+.vscode
