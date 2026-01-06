@@ -14,7 +14,7 @@
 
 	<groupId>com.m01project</groupId>
 	<artifactId>task-manager</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>task-manager</name>
 	<description>Full-stack task management (Spring Boot 3)</description>
 

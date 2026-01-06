@@ -38,9 +38,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/register",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/actuator/health",
-                                "/actuator/health/**"
+                                "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/api/users/**").hasRole("ADMIN") // only admin
                         .anyRequest().authenticated()
