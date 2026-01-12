@@ -28,7 +28,7 @@ jobs:
 
       - name: Build & Test with Maven
         run:
-          mvn -B verify
+          mvn -B verify --file backend/pom.xml
         env:
           MAVEN_OPTS: >
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
