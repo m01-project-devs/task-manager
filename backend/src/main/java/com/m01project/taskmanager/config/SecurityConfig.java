@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * Security configuration for the Task Manager application.
@@ -30,6 +31,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     /**
      * Constructor for dependency injection.
@@ -37,13 +39,16 @@ public class SecurityConfig {
      * @param jwtAuthFilter                  filter that validates JWT tokens on each request
      * @param authenticationProvider         provider that handles authentication logic
      * @param jwtAuthenticationEntryPoint    custom entry point that returns 401 for auth failures
+     * @param corsConfigurationSource        CORS configuration for cross-origin requests
      */
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
                           AuthenticationProvider authenticationProvider,
-                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                          CorsConfigurationSource corsConfigurationSource) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.corsConfigurationSource = corsConfigurationSource;
     }
 
     /**
@@ -70,6 +75,11 @@ public class SecurityConfig {
         http
                 // Disable CSRF - not needed for stateless JWT authentication
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // Enable CORS with custom configuration
+                // This allows frontend applications on different domains to access the API
+                // Configuration is managed in CorsConfig.java and can be customized via environment variables
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
                 // Configure stateless session management (no server-side sessions)
                 .sessionManagement(session ->
