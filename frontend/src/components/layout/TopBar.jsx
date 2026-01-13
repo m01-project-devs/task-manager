@@ -8,7 +8,6 @@ import {
   Button,
   Avatar
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 
 const TopBar = ({ onLogout }) => {
   const email = localStorage.getItem("email");
@@ -19,26 +18,6 @@ const TopBar = ({ onLogout }) => {
           <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
             Task Manager
           </Typography>
-        </Box>
-
-        <Box sx={{ flexGrow: 1, mx: 2, maxWidth: 400 }}>
-          <Box
-            sx={{
-              position: "relative",
-              borderRadius: 1,
-              backgroundColor: "rgba(255,255,255,0.15)",
-              "&:hover": { backgroundColor: "rgba(255,255,255,0.25)" },
-              display: "flex",
-              alignItems: "center",
-              px: 1,
-            }}
-          >
-            <SearchIcon sx={{ mr: 1 }} />
-            <InputBase
-              placeholder="Search…"
-              sx={{ color: "inherit", width: "100%" }}
-            />
-          </Box>
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

@@ -1,39 +1,34 @@
-import { Box, Button, TextField } from "@mui/material";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import BoardItem from "./BoardItem";
-import { createBoard } from "../../api/boardAPI";
+import { Box } from "@mui/material";
+import { useState } from "react";
 
-export default function BoardList({ boards, refreshBoards }) {
-  const [newBoard, setNewBoard] = useState("");
-  const navigate = useNavigate();
+export default function BoardList({ boards, onDelete, onSave }) {
+  const [editingBoardId, setEditingBoardId] = useState(null);
 
-  const handleAdd = async () => {
-    if (!newBoard.trim()) return;
-    await createBoard(newBoard);
-    setNewBoard("");
-    refreshBoards();
+  const handleEdit = (board) => setEditingBoardId(board.id);
+  const handleCancelEdit = () => setEditingBoardId(null);
+
+  const handleSaveLocal = async (boardId, newName) => {
+    await onSave(boardId, newName);
+    setEditingBoardId(null);
+  };
+
+  const handleDeleteLocal = (board) => {
+    onDelete(board); // pass board object to askDelete
   };
 
   return (
     <Box>
-      <Box sx={{ display: "flex", mb: 2 }}>
-        <TextField
-          label="New Board"
-          value={newBoard}
-          onChange={(e) => setNewBoard(e.target.value)}
-          fullWidth
-        />
-        <Button sx={{ ml: 2 }} variant="contained" onClick={handleAdd}>
-          Add
-        </Button>
-      </Box>
-
       {boards.map((board) => (
         <BoardItem
           key={board.id}
           board={board}
-          onClick={() => navigate(`/boards/${board.id}`)}
+          isEditing={editingBoardId === board.id}
+          onEdit={() => handleEdit(board)}
+          onCancelEdit={handleCancelEdit}
+          onSave={(newName) => handleSaveLocal(board.id, newName)}
+          onDelete={() => handleDeleteLocal(board)}
+          onClick={() => window.location.href = `/boards/${board.id}`}
         />
       ))}
     </Box>

@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import BoardPage from "./pages/BoardPage";
 import TodoPage from "./pages/TodoPage";
+import AdminUserPage from "./pages/AdminUserPage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AuthLayout from "./components/layout/AuthLayout";
@@ -13,6 +14,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
+
         <Route
           path="/login"
           element={
@@ -46,6 +48,18 @@ function App() {
             <ProtectedRoute>
               <HomeLayout>
                 <TodoPage />
+              </HomeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin User Page */}
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute requireRole="ADMIN">
+              <HomeLayout>
+                <AdminUserPage />
               </HomeLayout>
             </ProtectedRoute>
           }

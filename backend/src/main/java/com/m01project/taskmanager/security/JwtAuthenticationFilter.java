@@ -73,9 +73,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-
-            
-
         } catch (Exception ex) {
             // DEV-12 compliant safe error response
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

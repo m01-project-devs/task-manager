@@ -21,6 +21,13 @@ public class TaskManagerApplication {
 		try {
 			// Determine project root - check multiple possible locations
 			String projectRoot = findProjectRoot();
+
+			// Skip if .env doesn't exist (e.g., in Cloud Run)
+			if (!Paths.get(projectRoot, ".env").toFile().exists()) {
+				log.info("No .env file found - skipping environment variable loading (using system/Cloud Run env vars)");
+				return;
+			}
+
 			log.info("Loading .env from: {}", projectRoot);
 
 			Dotenv dotenv = Dotenv.configure()

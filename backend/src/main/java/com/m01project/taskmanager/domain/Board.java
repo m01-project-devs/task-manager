@@ -3,6 +3,7 @@ package com.m01project.taskmanager.domain;
 import com.m01project.taskmanager.domain.Base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter

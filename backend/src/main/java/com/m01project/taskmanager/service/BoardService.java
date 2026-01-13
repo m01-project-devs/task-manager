@@ -2,8 +2,8 @@ package com.m01project.taskmanager.service;
 
 import com.m01project.taskmanager.domain.Board;
 import com.m01project.taskmanager.domain.User;
-import com.m01project.taskmanager.dto.BoardResponse;
-import com.m01project.taskmanager.dto.CreateBoardRequest;
+import com.m01project.taskmanager.dto.response.BoardResponse;
+import com.m01project.taskmanager.dto.request.CreateBoardRequest;
 import com.m01project.taskmanager.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

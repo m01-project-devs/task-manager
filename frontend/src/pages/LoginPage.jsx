@@ -10,6 +10,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 import { authTextFieldSx } from "../components/form/TextFieldStyles";
 import { API_BASE_URL } from "../config/apiConfig";
 
@@ -31,8 +32,8 @@ const LoginPage = () => {
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (password.length < 4) {
+      setError("Password must be at least 4 characters.");
       return;
     }
 
@@ -50,15 +51,26 @@ const LoginPage = () => {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("isAuth", "true");
+
+      // ===== SAVE TOKEN =====
+      localStorage.setItem("token", data.token);
       localStorage.setItem("email", email);
+
+      // ===== DECODE TOKEN =====
+      const decoded = jwt_decode(data.token);
+      const role = decoded.role;
 
       setSuccess(true);
 
+      // ===== ROLE BASED REDIRECT =====
       setTimeout(() => {
-        navigate("/boards");
+        if (role === "ADMIN") {
+          navigate("/users");
+        } else {
+          navigate("/boards");
+        }
       }, 1000);
+
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -83,6 +95,7 @@ const LoginPage = () => {
         <Typography variant="h4" gutterBottom>
           Login
         </Typography>
+
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -91,7 +104,6 @@ const LoginPage = () => {
           <TextField
             label="Email"
             type="email"
-            variant="outlined"
             fullWidth
             margin="normal"
             value={email}
@@ -99,10 +111,10 @@ const LoginPage = () => {
             required
             sx={authTextFieldSx}
           />
+
           <TextField
             label="Password"
             type="password"
-            variant="outlined"
             fullWidth
             margin="normal"
             value={password}
@@ -110,10 +122,10 @@ const LoginPage = () => {
             required
             sx={authTextFieldSx}
           />
+
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             fullWidth
             sx={{ mt: 2 }}
             disabled={loading}
@@ -124,13 +136,13 @@ const LoginPage = () => {
 
         <Typography variant="body2" sx={{ mt: 2 }}>
           Don't have an account?{" "}
-          <Link component={RouterLink}  to="/register">
+          <Link component={RouterLink} to="/register">
             Register
           </Link>
         </Typography>
       </Box>
 
-      {/* Error Snackbar */}
+      {/* ERROR */}
       <Snackbar
         open={!!error}
         autoHideDuration={6000}
@@ -142,7 +154,7 @@ const LoginPage = () => {
         </Alert>
       </Snackbar>
 
-      {/* Success Snackbar */}
+      {/* SUCCESS */}
       <Snackbar
         open={success}
         autoHideDuration={3000}

@@ -1,41 +1,36 @@
 import { useEffect, useState } from "react";
-import { getTodos } from "../api/boardAPI";
+import { useParams } from "react-router-dom";
+import { getTodos } from "../api/todoAPI";
 import TodoList from "../components/todo/TodoList";
 import { Box, Typography } from "@mui/material";
-import { useParams } from "react-router-dom";
 
 export default function TodoPage() {
   const { boardId } = useParams();
   const [todos, setTodos] = useState([]);
 
+  const loadTodos = async () => {
+    const data = await getTodos(boardId);
+    setTodos(data || []);
+  };
+
   useEffect(() => {
     const fetchTodos = async () => {
-      try {
-        const data = await getTodos(boardId);
-        setTodos(data);
-      } catch (err) {
-        console.error("Error fetching todos:", err);
-      }
+      await loadTodos();
     };
-
     fetchTodos();
   }, [boardId]);
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Box>
       <Typography variant="h4" sx={{ mb: 2 }}>
-        Todos
+        My Todo List
       </Typography>
-      <TodoList boardId={boardId} todos={todos} refreshTodos={() => {
-        (async () => {
-          try {
-            const data = await getTodos(boardId);
-            setTodos(data);
-          } catch (err) {
-            console.error(err);
-          }
-        })();
-      }} />
+
+      <TodoList
+        boardId={boardId}
+        todos={todos}
+        refreshTodos={loadTodos}
+      />
     </Box>
   );
 }
