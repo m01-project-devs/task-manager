@@ -13,4 +13,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findByUserAndDeletedFalse(User user, Pageable pageable);
 
     Optional<Board> findByIdAndUserAndDeletedFalse(Long id, User user);
+
+    boolean existsByUserAndTitleAndDeletedFalse(User user, String title);
+
 }

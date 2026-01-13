@@ -10,11 +10,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "board")
+@Table(name = "board",
+        indexes = {
+                @Index(name = "idx_board_user_id", columnList = "user_id"),
+                @Index(name = "idx_board_is_deleted", columnList = "is_deleted")
+        })
 public class Board extends BaseEntity {
 
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, length =100)
+    private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
