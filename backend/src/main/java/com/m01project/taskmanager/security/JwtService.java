@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class JwtService {
@@ -56,13 +58,17 @@ public class JwtService {
 
 
 
-    public String generateToken(String email) {
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole().name());
+
         Date now = new Date();
         Date expiry = new Date(now.getTime() + EXPIRATION_TIME);
 
         return Jwts.builder()
-                .setSubject(email) // user identity
-                .setIssuedAt(now)   //token creation time
+                .setClaims(claims)
+                .setSubject(user.getEmail())
+                .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
