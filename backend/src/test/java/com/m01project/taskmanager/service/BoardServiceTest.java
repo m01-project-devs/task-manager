@@ -33,11 +33,11 @@ class BoardServiceTest {
         User user = new User();
 
         CreateBoardRequest request = new CreateBoardRequest();
-        request.setName("My Board");
+        request.setTitle("My Board");
 
         Board savedBoard = new Board();
         savedBoard.setId(1L);
-        savedBoard.setName("My Board");
+        savedBoard.setTitle("My Board");
         savedBoard.setUser(user);
 
         when(boardRepository.save(any(Board.class))).thenReturn(savedBoard);
@@ -54,18 +54,21 @@ class BoardServiceTest {
 
         Board board = new Board();
         board.setId(1L);
-        board.setName("Board 1");
+        board.setTitle("Board 1");
+        board.setUser(user);
+
+        Pageable pageable = PageRequest.of(0, 10);
 
         Page<Board> page = new PageImpl<>(
                 List.of(board),
-                PageRequest.of(0, 10),
+                pageable,
                 1
         );
 
         when(boardRepository.findByUserAndDeletedFalse(eq(user), any(Pageable.class)))
                 .thenReturn(page);
 
-        Page<BoardResponse> result = boardService.getBoards(user, 0, 10);
+        Page<BoardResponse> result = boardService.getBoards(user, pageable);
 
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getName()).isEqualTo("Board 1");
