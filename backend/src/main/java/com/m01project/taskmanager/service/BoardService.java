@@ -46,4 +46,15 @@ public class BoardService {
         board.setDeleted(true);
         boardRepository.save(board);
     }
+
+    public Board updateBoard(Long boardId, com.yourproject.dto.request.UpdateBoardRequest request) {
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+
+        board.setName(request.getName());
+
+        return boardRepository.save(board);
+    }
+
 }

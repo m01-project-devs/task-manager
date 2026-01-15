@@ -1,5 +1,6 @@
 package com.m01project.taskmanager.controller;
 
+import com.m01project.taskmanager.domain.Board;
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.dto.request.CreateBoardRequest;
@@ -49,4 +50,14 @@ public class BoardController {
         boardService.deleteBoard(boardId, user);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/boards/{id}")
+    public BoardResponse updateBoard(
+            @PathVariable Long id,
+            @RequestBody com.yourproject.dto.request.UpdateBoardRequest request
+    ) {
+        Board updated = boardService.updateBoard(id, request);
+        return new BoardResponse(updated);
+    }
+
 }
