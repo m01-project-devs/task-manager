@@ -14,7 +14,7 @@ public class BoardResponse {
 
     public BoardResponse(Board board) {
         this.id = board.getId();
-        this.name = board.getName();
+        this.name = board.getTitle();
         this.createdAt = board.getCreatedAt();
     }
 
