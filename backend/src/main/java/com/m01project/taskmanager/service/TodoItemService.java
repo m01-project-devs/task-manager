@@ -39,6 +39,17 @@ public class TodoItemService {
         return new TodoItemResponse(saved.getTitle(), saved.getId(), saved.getDescription(), saved.isCompleted());
     }
 
+    @Transactional()
+    public TodoItemResponse getTodoItem(Long boardId, Long itemId) {
+        TodoItem item = todoItemRepository
+                .findByIdAndBoardIdAndDeletedAtIsNull(itemId, boardId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Todo item not found for this board")
+                );
+        return mapToResponse(item);
+    }
+
+
     @Transactional
     public TodoItemResponse updateToDoItem(Long boardId, Long itemId, TodoItemRequest request) {
         TodoItem item = todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(itemId, boardId)
