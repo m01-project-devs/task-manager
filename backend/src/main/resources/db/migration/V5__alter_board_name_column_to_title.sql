@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS board
+RENAME COLUMN name TO title;
