@@ -29,5 +29,4 @@ public class UserUpdateRequestDto {
     private String lastName;
 
     private String role;
-
 }
