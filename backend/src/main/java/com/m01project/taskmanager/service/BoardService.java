@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +48,7 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    public Board updateBoard(Long boardId, com.yourproject.dto.request.UpdateBoardRequest request) {
+    public Board updateBoard(Long boardId,UpdateBoardRequest request) {
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("Board not found"));

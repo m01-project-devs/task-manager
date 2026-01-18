@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
 @RestController
 @RequestMapping("/api/boards")
 public class BoardController {
@@ -51,10 +51,10 @@ public class BoardController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/boards/{id}")
+    @PutMapping("/{id}")
     public BoardResponse updateBoard(
             @PathVariable Long id,
-            @RequestBody com.yourproject.dto.request.UpdateBoardRequest request
+            @Valid @RequestBody UpdateBoardRequest request
     ) {
         Board updated = boardService.updateBoard(id, request);
         return new BoardResponse(updated);

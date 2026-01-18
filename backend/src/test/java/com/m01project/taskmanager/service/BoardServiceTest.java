@@ -2,6 +2,7 @@ package com.m01project.taskmanager.service;
 
 import com.m01project.taskmanager.domain.Board;
 import com.m01project.taskmanager.domain.User;
+import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
 import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.dto.request.CreateBoardRequest;
 import com.m01project.taskmanager.repository.BoardRepository;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -99,4 +103,34 @@ class BoardServiceTest {
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Board not found");
     }
+
+    @Test
+    void updateBoard_shouldUpdateNameAndSave() {
+        // Arrange
+        Long boardId = 1L;
+
+        Board board = new Board();
+        board.setId(boardId);
+        board.setName("Old Name");
+
+        UpdateBoardRequest request = new UpdateBoardRequest();
+        request.setName("New Name");
+
+        Mockito.when(boardRepository.findById(boardId))
+                .thenReturn(Optional.of(board));
+
+        Mockito.when(boardRepository.save(Mockito.any(Board.class)))
+                .thenReturn(board);
+
+        // Act
+        Board result = boardService.updateBoard(boardId, request);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("New Name", result.getName());
+
+        Mockito.verify(boardRepository).findById(boardId);
+        Mockito.verify(boardRepository).save(board);
+    }
+
 }
