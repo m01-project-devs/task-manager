@@ -9,6 +9,7 @@ export async function getUsers() {
   const res = await fetch(`${API_BASE_URL}/api/users`, {
     headers: authHeaders(),
   });
+  console.log(res)
   if (!res.ok) throw new Error("Failed to fetch users");
   return res.json();
 }
