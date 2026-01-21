@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AuthLayout from "./components/layout/AuthLayout";
@@ -42,6 +43,15 @@ function App() {
                <ResetPassword />
              </AuthLayout>
            }
+        />
+
+        <Route
+            path="/forgot-password"
+            element={
+                <AuthLayout>
+                    <ForgotPassword />
+                </AuthLayout>
+            }
         />
 
         {/* HOME */}
