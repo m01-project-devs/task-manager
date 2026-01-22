@@ -124,7 +124,15 @@ const LoginPage = () => {
             Register
           </Link>
         </Typography>
+
+        <Typography variant="body2" sx={{ mt: 1 }}>
+            Forgot your password?{" "}
+            <Link component={RouterLink} sx={{ color: "white" }} to="/forgot-password">
+               Reset it
+            </Link>
+        </Typography>
       </Box>
+
 
       {/* Error Snackbar */}
       <Snackbar
