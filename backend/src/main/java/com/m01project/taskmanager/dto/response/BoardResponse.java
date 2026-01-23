@@ -1,4 +1,4 @@
-package com.m01project.taskmanager.dto;
+package com.m01project.taskmanager.dto.response;
 
 import com.m01project.taskmanager.domain.Board;
 import lombok.Getter;
