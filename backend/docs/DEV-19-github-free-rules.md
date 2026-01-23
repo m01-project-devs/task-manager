@@ -14,7 +14,7 @@ and prevent direct changes to critical branches.
 The following rules are available:
 
 - Require pull request before merging
-- Require at least one approval
+- Require at least two approval
 - Dismiss stale approvals when new commits are pushed
 - Require status checks to pass before merging
 - Require branches to be up to date before merging
