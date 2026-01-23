@@ -53,10 +53,7 @@ public class UserController {
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable @Valid String email) {
-        boolean deleted = userService.delete(email);
-        if(deleted) {
-            return ResponseEntity.noContent().build();
-        }
+        userService.delete(email);
         return ResponseEntity.notFound().build();
     }
 

@@ -1,0 +1,8 @@
+ALTER TABLE users
+    ADD COLUMN updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN deleted_at TIMESTAMP;
+
+UPDATE users
+SET updated_at = created_at
+WHERE updated_at IS NULL;
