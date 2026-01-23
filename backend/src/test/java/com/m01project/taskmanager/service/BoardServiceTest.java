@@ -4,6 +4,7 @@ import com.m01project.taskmanager.domain.Board;
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.dto.request.CreateBoardRequest;
+import com.m01project.taskmanager.exception.BoardNotFoundException;
 import com.m01project.taskmanager.repository.BoardRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,7 +100,7 @@ class BoardServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> boardService.deleteBoard(1L, user))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Board not found");
+                .isInstanceOf(BoardNotFoundException.class)
+                .hasMessage("Board not found with id: 1");
     }
 }
