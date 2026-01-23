@@ -1,8 +1,10 @@
 package com.m01project.taskmanager.service.impl;
 
+import com.m01project.taskmanager.domain.Role;
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.UserCreateRequestDto;
 import com.m01project.taskmanager.dto.request.UserUpdateRequestDto;
+import com.m01project.taskmanager.exception.InvalidRoleAssignmentException;
 import com.m01project.taskmanager.exception.ResourceNotFoundException;
 import com.m01project.taskmanager.exception.UserAlreadyExistsException;
 import com.m01project.taskmanager.repository.UserRepository;
@@ -63,10 +65,6 @@ public class UserServiceImplTest {
     void updateUser_WhenUserExists() {
         String email = "test@example.com";
         UserUpdateRequestDto request = new UserUpdateRequestDto("newPass", "John", "Smith");
-
-        // Create user with 4-argument constructor - Role automatically defaults to USER
-        // Previously we had to manually call: existingUser.setRole(Role.USER)
-        // Now the constructor handles this automatically
         User existingUser = new User("test@example.com", "oldPass", "Joe", "Duo");
 
         // Mock password encoder since UserServiceImpl uses it to encode the new password
@@ -99,19 +97,42 @@ public class UserServiceImplTest {
     @Test
     void deleteUser_WhenUserExist() {
         String email = "test@example.com";
-        User user = new User(1L, "test@example.com", "12345678", "Joe", "Duo", null, null);
+        User user = new User("test@example.com", "12345678", "Joe", "Duo");
+        user.setId(1L);
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        boolean result = userService.delete(email);
-        assertThat(result).isTrue();
+
+        //when
+        userService.delete(email);
+
+        //then
         verify(userRepository).deleteById(1L);
+    }
+
+    @Test
+    void deleteUser_WhenUserIsAdmin_ShouldThrowException() {
+        String email = "admin@example.com";
+        User user = new User("admin@example.com", "12345678", "Admin", "User");
+        user.setId(1L);
+        user.setRole(Role.ADMIN);
+
+        when(userRepository.findByEmail(email))
+                .thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> userService.delete(email))
+                .isInstanceOf(InvalidRoleAssignmentException.class);
+
+        verify(userRepository, never()).delete(any());
     }
 
     @Test
     void deleteUser_WhenUserNotExist() {
         String email = "notFound@example.com";
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-        boolean result = userService.delete(email);
-        assertThat(result).isFalse();
+
+        //when
+        userService.delete(email);
+
+        //then
         verify(userRepository,never()).deleteById(any());
     }
 }

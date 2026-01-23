@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,16 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND.value()
         );
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidRoleAssignmentException.class)
+    public ResponseEntity<?> handleInvalidRoleAssignment(InvalidRoleAssignmentException ex) {
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                ex.getMessage(),
+                HttpStatus.FORBIDDEN.value()
+        );
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)

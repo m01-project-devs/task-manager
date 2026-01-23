@@ -29,8 +29,12 @@ import java.util.List;
 @Entity
 @Table (name = "users")
 public class User extends BaseEntity implements UserDetails {
+
     public User(String email, String password, String firstName, String lastName) {
-        this(null, email, password, firstName, lastName, Role.USER, null);
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     @Override
