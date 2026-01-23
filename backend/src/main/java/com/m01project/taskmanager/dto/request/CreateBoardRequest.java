@@ -9,6 +9,6 @@ import lombok.Setter;
 public class CreateBoardRequest {
 
     @NotBlank(message = "Board name cannot be empty")
-    private String name;
+    private String title;
 
 }
