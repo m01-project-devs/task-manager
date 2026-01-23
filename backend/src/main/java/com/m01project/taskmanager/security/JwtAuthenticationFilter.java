@@ -80,6 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write("""
                     { "error": "Invalid or expired token" }
                     """);
+            return; // Stop filter chain - response already written
         }
         filterChain.doFilter(request, response);
     }
