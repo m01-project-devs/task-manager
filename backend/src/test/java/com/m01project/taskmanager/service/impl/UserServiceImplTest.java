@@ -129,10 +129,9 @@ public class UserServiceImplTest {
         String email = "notFound@example.com";
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        //when
-        userService.delete(email);
+        assertThatThrownBy(() -> userService.delete(email))
+                .isInstanceOf(ResourceNotFoundException.class);
 
-        //then
         verify(userRepository,never()).deleteById(any());
     }
 }
