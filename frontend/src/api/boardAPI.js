@@ -1,41 +1,22 @@
-import { API_BASE_URL } from "../config/apiConfig";
-
-const authHeaders = () => ({
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${localStorage.getItem("token")}`,
-});
+import api from "./axios";
 
 // --------- Board API ---------
+
 export async function getBoards() {
-  const res = await fetch(`${API_BASE_URL}/api/boards`, {
-    headers: authHeaders(),
-  });
-  const data = await res.json();
-  return data.content; 
+  const res = await api.get("/boards");
+  return res.data.content;
 }
 
 export async function createBoard(name) {
-  const res = await fetch(`${API_BASE_URL}/api/boards`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify({ name }),
-  });
-  return res.json();
+  const res = await api.post("/boards", { name });
+  return res.data;
 }
 
 export async function deleteBoard(boardId) {
-  await fetch(`${API_BASE_URL}/api/boards/${boardId}`, {
-    method: "DELETE",
-    headers: authHeaders(),
-  });
+  await api.delete(`/boards/${boardId}`);
 }
 
 export async function updateBoard(boardId, name) {
-  const res = await fetch(`${API_BASE_URL}/api/boards/${boardId}`, {
-    method: "PUT",
-    headers: authHeaders(),
-    body: JSON.stringify({ name }),
-  });
-  return res.json();
+  const res = await api.put(`/boards/${boardId}`, { name });
+  return res.data;
 }
-
