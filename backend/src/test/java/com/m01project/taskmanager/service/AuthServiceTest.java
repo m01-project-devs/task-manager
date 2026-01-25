@@ -45,7 +45,7 @@ class AuthServiceTest {
     void register_whenEmailUnused_shouldSaveUserAndReturnResponse() {
         RegisterRequest request = new RegisterRequest("test@example.com", "Secret123!", "Joe", "Duo");
 
-        when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
+        when(userRepository.existsByEmailAndDeletedAtIsNull("test@example.com")).thenReturn(false);
         when(passwordEncoder.encode("Secret123!")).thenReturn("encodedSecret");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -65,7 +65,7 @@ class AuthServiceTest {
     @Test
     void register_whenEmailUsed_shouldThrowException() {
         RegisterRequest request = new RegisterRequest("test@example.com", "Secret123!", "Joe", "Duo");
-        when(userRepository.existsByEmail("test@example.com")).thenReturn(true);
+        when(userRepository.existsByEmailAndDeletedAtIsNull("test@example.com")).thenReturn(true);
 
         assertThatThrownBy(() -> authService.register(request))
                 .isInstanceOf(EmailAlreadyUsedException.class)
@@ -85,7 +85,7 @@ class AuthServiceTest {
         request.setEmail("test@example.com");
         request.setPassword("Secret123!");
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull("test@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("Secret123!", "encodedSecret")).thenReturn(true);
         when(jwtService.generateToken(user)).thenReturn("jwt-token");
 
@@ -101,7 +101,7 @@ class AuthServiceTest {
         request.setEmail("missing@example.com");
         request.setPassword("Secret123!");
 
-        when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndDeletedAtIsNull("missing@example.com")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> authService.login(request))
                 .isInstanceOf(BadCredentialsException.class)
@@ -121,7 +121,7 @@ class AuthServiceTest {
         request.setEmail("test@example.com");
         request.setPassword("WrongPass!");
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull("test@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("WrongPass!", "encodedSecret")).thenReturn(false);
 
         assertThatThrownBy(() -> authService.login(request))

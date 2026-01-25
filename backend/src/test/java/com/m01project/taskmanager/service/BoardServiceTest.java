@@ -66,7 +66,7 @@ class BoardServiceTest {
         BoardRequest request = new BoardRequest();
         request.setTitle("My Board");
 
-        when(boardRepository.existsByUserAndTitleAndDeletedFalse(user, "My Board"))
+        when(boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, "My Board"))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> boardService.createBoard(request, user))
@@ -167,7 +167,7 @@ class BoardServiceTest {
         BoardRequest request = new BoardRequest();
         request.setTitle("New Title");
 
-        when(boardRepository.findByIdAndUserAndDeletedFalse(boardId, user))
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> boardService.updateBoard(boardId, request, user))
@@ -189,9 +189,9 @@ class BoardServiceTest {
         BoardRequest request = new BoardRequest();
         request.setTitle("Old Title");
 
-        when(boardRepository.findByIdAndUserAndDeletedFalse(boardId, user))
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user))
                 .thenReturn(Optional.of(board));
-        when(boardRepository.existsByUserAndTitleAndDeletedFalse(user, "Old Title"))
+        when(boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, "Old Title"))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> boardService.updateBoard(boardId, request, user))

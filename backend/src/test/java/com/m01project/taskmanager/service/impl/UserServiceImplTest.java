@@ -14,6 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -21,14 +25,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
@@ -170,12 +168,15 @@ public class UserServiceImplTest {
         String email = "test@example.com";
         User user = new User("test@example.com", "12345678", "Joe", "Duo");
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.of(user));
 
-        Optional<User> result = userService.findByEmail(email);
+        User result = userService.findByEmail(email);
 
-        assertThat(result).contains(user);
-        verify(userRepository).findByEmail(email);
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getFirstName(), result.getFirstName());
+        assertEquals(user.getLastName(), result.getLastName());
+        assertEquals(user.getRole(), result.getRole());
+        verify(userRepository).findByEmailAndDeletedAtIsNull(email);
     }
 
     @Test
