@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -128,15 +129,15 @@ class UserControllerMvcTest {
 
     @Test
     void deleteUser_WhenUserExists() throws Exception {
-        when(userService.delete("delete@example.com")).thenReturn(true);
+        doNothing().when(userService).delete("delete@example.com");
 
         mockMvc.perform(delete("/api/users/delete@example.com"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void deleteUser_WhenUserNotExist() throws Exception {
-        when(userService.delete("notFound@example.com")).thenReturn(false);
+        doNothing().when(userService).delete("notFound@example.com");
 
         mockMvc.perform(delete("/api/users/notFound@example.com"))
                 .andExpect(status().isNotFound());

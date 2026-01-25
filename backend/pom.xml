@@ -173,6 +173,17 @@
 					<mainClass>com.m01project.taskmanager.TaskManagerApplication</mainClass>
 				</configuration>
 			</plugin>
+
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>11.7.2</version>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/taskmanager</url>
+                    <user>postgres</user>
+                    <password>postgres</password>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
