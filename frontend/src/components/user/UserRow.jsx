@@ -98,7 +98,11 @@ export default function UserRow({ user, index, onUpdate, onAskDelete }) {
             <IconButton onClick={() => setEditing(true)}>
               <Edit />
             </IconButton>
-            <IconButton color="error" disabled={user.email === currentEmail} onClick={() => onAskDelete(user.email)}>
+            <IconButton
+              color="error"
+              disabled={user.email === currentEmail}
+              onClick={() => onAskDelete(user.email)}
+            >
               <Delete />
             </IconButton>
           </>

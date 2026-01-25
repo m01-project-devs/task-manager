@@ -46,7 +46,7 @@ function BoardPageContent() {
 
   const filteredBoards = useMemo(() => {
     return boards.filter((b) =>
-      b.name.toLowerCase().includes(search.toLowerCase())
+      b.name.toLowerCase().includes(search.toLowerCase()),
     );
   }, [boards, search]);
 
@@ -115,7 +115,7 @@ function BoardPageContent() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setPage(0); // reset page on search
+              setPage(0);
             }}
             InputProps={{
               startAdornment: (

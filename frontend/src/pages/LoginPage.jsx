@@ -70,7 +70,6 @@ const LoginPage = () => {
           navigate("/boards");
         }
       }, 1000);
-
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {

@@ -1,4 +1,4 @@
-import api from "./axios"; // сенин жалпы axios instance
+import api from "./axios";
 
 export async function pingBackend() {
   try {

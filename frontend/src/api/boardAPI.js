@@ -7,8 +7,8 @@ export async function getBoards() {
   return res.data.content;
 }
 
-export async function createBoard(name) {
-  const res = await api.post("/boards", { name });
+export async function createBoard(title) {
+  const res = await api.post("/boards", { title });
   return res.data;
 }
 

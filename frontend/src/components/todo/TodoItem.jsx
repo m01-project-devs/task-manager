@@ -13,10 +13,7 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
         gap: 1,
       }}
     >
-      <Checkbox
-        checked={todo.completed}
-        onChange={() => onToggle(todo.id)}
-      />
+      <Checkbox checked={todo.completed} onChange={() => onToggle(todo.id)} />
 
       <Typography
         sx={{
@@ -24,7 +21,7 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
           textDecoration: todo.completed ? "line-through" : "none",
         }}
       >
-        {todo.title}fswf
+        {todo.title}
       </Typography>
 
       <IconButton color="error" onClick={() => onDelete(todo.id)}>

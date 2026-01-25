@@ -42,13 +42,12 @@ function AdminUserPageContent() {
       try {
         const data = await getUsers();
         setUsers(data.content || []);
-        console.log(data.totalPages)
+        console.log(data.totalPages);
       } finally {
         setLoading(false);
       }
     })();
   }, []);
-  
 
   const handleCreate = async () => {
     await createUser(newUser);

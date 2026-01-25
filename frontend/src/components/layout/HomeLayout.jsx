@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@mui/material";
-import TopBar from "./TopBar"; 
+import TopBar from "./TopBar";
 
 export default function HomeLayout({ children }) {
   const handleLogout = () => {
@@ -15,7 +15,7 @@ export default function HomeLayout({ children }) {
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#f5f7fa", 
+        backgroundColor: "#f5f7fa",
       }}
     >
       <TopBar onLogout={handleLogout} />

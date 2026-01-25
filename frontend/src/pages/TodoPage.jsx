@@ -1,24 +1,83 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getTodos } from "../api/todoAPI";
+import { getTodos, createTodo, updateTodo } from "../api/todoAPI";
 import TodoList from "../components/todo/TodoList";
 import { Box, Typography } from "@mui/material";
+import { SnackbarProvider, useSnackbar } from "notistack";
 
-export default function TodoPage() {
+function TodoPageContent() {
   const { boardId } = useParams();
   const [todos, setTodos] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const loadTodos = async () => {
-    const data = await getTodos(boardId);
-    setTodos(data || []);
+    try {
+      const data = await getTodos(boardId);
+      setTodos(data || []);
+    } catch (err) {
+      console.error(err);
+      enqueueSnackbar("Failed to load todos", { variant: "error" });
+    }
   };
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      await loadTodos();
-    };
-    fetchTodos();
+    getTodos(boardId)
+      .then((data) => setTodos(data || []))
+      .catch(() =>
+        enqueueSnackbar("Failed to load todos", { variant: "error" }),
+      );
   }, [boardId]);
+
+  const handleAdd = async (title) => {
+    if (!title.trim()) return;
+    try {
+      await createTodo(boardId, title);
+      enqueueSnackbar("Todo added", { variant: "success" });
+      loadTodos();
+    } catch {
+      enqueueSnackbar("Failed to add todo", { variant: "error" });
+    }
+  };
+
+  const handleToggle = async (todoId) => {
+    const todo = todos.find((t) => t.id === todoId);
+    if (!todo) return;
+
+    try {
+      await updateTodo(boardId, todoId, {
+        title: todo.title,
+        completed: !todo.completed,
+      });
+
+      enqueueSnackbar(
+        todo.completed ? "Todo marked incomplete" : "Todo completed",
+        { variant: "info" },
+      );
+
+      loadTodos();
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar("Failed to update todo", { variant: "error" });
+    }
+  };
+
+  const handleDelete = async (todoId) => {
+    const todo = todos.find((t) => t.id === todoId);
+    if (!todo) return;
+
+    try {
+      await updateTodo(boardId, todoId, {
+        title: todo.title,
+        deleted: true,
+      });
+
+      enqueueSnackbar("Todo deleted", { variant: "error" });
+      loadTodos();
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar("Failed to delete todo", { variant: "error" });
+    }
+  };
 
   return (
     <Box>
@@ -29,8 +88,22 @@ export default function TodoPage() {
       <TodoList
         boardId={boardId}
         todos={todos}
-        refreshTodos={loadTodos}
+        onAdd={handleAdd}
+        onToggle={handleToggle}
+        onDelete={handleDelete}
       />
     </Box>
+  );
+}
+
+export default function TodoPage() {
+  return (
+    <SnackbarProvider
+      maxSnack={3}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      autoHideDuration={3000}
+    >
+      <TodoPageContent />
+    </SnackbarProvider>
   );
 }

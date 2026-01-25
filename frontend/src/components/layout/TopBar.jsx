@@ -6,7 +6,7 @@ import {
   Box,
   InputBase,
   Button,
-  Avatar
+  Avatar,
 } from "@mui/material";
 
 const TopBar = ({ onLogout }) => {
@@ -20,14 +20,21 @@ const TopBar = ({ onLogout }) => {
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Avatar sx={{ width: 32, height: 32, bgcolor: "#26a69a" }}>
             {email ? email[0].toUpperCase() : "?"}
           </Avatar>
-           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
-              {email || ""}
-            </Typography>
-          <Button color="inherit" onClick={onLogout} sx={{bgcolor: "#f44336"}}>
+          <Typography
+            variant="body2"
+            sx={{ display: { xs: "none", sm: "block" } }}
+          >
+            {email || ""}
+          </Typography>
+          <Button
+            color="inherit"
+            onClick={onLogout}
+            sx={{ bgcolor: "#f44336" }}
+          >
             Logout
           </Button>
         </Box>

@@ -30,14 +30,14 @@ export default function UserTable({ users, reload, enqueueSnackbar }) {
     return users.filter((u) =>
       `${u.email} ${u.firstName} ${u.lastName} ${u.role}`
         .toLowerCase()
-        .includes(search.toLowerCase())
+        .includes(search.toLowerCase()),
     );
   }, [users, search]);
 
   /* ---------- PAGINATION ---------- */
   const paginatedUsers = filteredUsers.slice(
     page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+    page * rowsPerPage + rowsPerPage,
   );
 
   /* ---------- ACTIONS ---------- */

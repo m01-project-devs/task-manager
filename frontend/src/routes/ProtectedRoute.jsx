@@ -1,4 +1,4 @@
-import jwt_decode from "jwt-decode"; 
+import jwt_decode from "jwt-decode";
 import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children, requireRole }) {
@@ -9,8 +9,8 @@ export default function ProtectedRoute({ children, requireRole }) {
   let role;
 
   try {
-    const decoded = jwt_decode(token); 
-    role = decoded.role;  
+    const decoded = jwt_decode(token);
+    role = decoded.role;
   } catch (err) {
     console.error("Invalid token", err);
     return <Navigate to="/login" replace />;

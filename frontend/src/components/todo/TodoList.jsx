@@ -1,31 +1,15 @@
 import { Box, TextField, Button } from "@mui/material";
-import { useState } from "react";
 import TodoItem from "./TodoItem";
-import { createTodo, updateTodo } from "../../api/todoAPI";
+import { Add } from "@mui/icons-material";
+import { useState } from "react";
 
-export default function TodoList({ boardId, todos, refreshTodos }) {
+export default function TodoList({ todos, onAdd, onToggle, onDelete }) {
   const [newTodo, setNewTodo] = useState("");
 
-  const handleAdd = async () => {
+  const handleAddClick = () => {
     if (!newTodo.trim()) return;
-    await createTodo(boardId, newTodo);
+    onAdd(newTodo.trim());
     setNewTodo("");
-    refreshTodos();
-  };
-
-  const handleToggle = async (todoId) => {
-    const todo = todos.find((t) => t.id === todoId);
-    await updateTodo(boardId, todoId, {
-      completed: !todo.completed,
-    });
-    refreshTodos();
-  };
-
-  const handleDelete = async (todoId) => {
-    await updateTodo(boardId, todoId, {
-      deleted: true,
-    });
-    refreshTodos();
   };
 
   return (
@@ -37,7 +21,12 @@ export default function TodoList({ boardId, todos, refreshTodos }) {
           onChange={(e) => setNewTodo(e.target.value)}
           fullWidth
         />
-        <Button sx={{ ml: 2 }} variant="contained" onClick={handleAdd}>
+        <Button
+          sx={{ ml: 2 }}
+          variant="contained"
+          onClick={handleAddClick}
+          startIcon={<Add />}
+        >
           Add
         </Button>
       </Box>
@@ -46,8 +35,8 @@ export default function TodoList({ boardId, todos, refreshTodos }) {
         <TodoItem
           key={todo.id}
           todo={todo}
-          onToggle={handleToggle}
-          onDelete={handleDelete}
+          onToggle={onToggle}
+          onDelete={onDelete}
         />
       ))}
     </Box>

@@ -14,7 +14,7 @@ export default function BoardList({ boards, onDelete, onSave }) {
   };
 
   const handleDeleteLocal = (board) => {
-    onDelete(board); // pass board object to askDelete
+    onDelete(board); 
   };
 
   return (
@@ -28,7 +28,7 @@ export default function BoardList({ boards, onDelete, onSave }) {
           onCancelEdit={handleCancelEdit}
           onSave={(newName) => handleSaveLocal(board.id, newName)}
           onDelete={() => handleDeleteLocal(board)}
-          onClick={() => window.location.href = `/boards/${board.id}`}
+          onClick={() => (window.location.href = `/boards/${board.id}`)}
         />
       ))}
     </Box>
