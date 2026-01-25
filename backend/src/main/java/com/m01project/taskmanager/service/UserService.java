@@ -14,5 +14,5 @@ public interface UserService {
     User update(String email, UserUpdateRequestDto updateRequestDto);
     Optional<User> findByEmail(String email);
     Page<User> getUsers(Pageable pageable);
-    boolean delete(String email);
+    void delete(String email);
 }

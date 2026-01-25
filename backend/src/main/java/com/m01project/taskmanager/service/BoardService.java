@@ -2,60 +2,80 @@ package com.m01project.taskmanager.service;
 
 import com.m01project.taskmanager.domain.Board;
 import com.m01project.taskmanager.domain.User;
-import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.dto.request.CreateBoardRequest;
+import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
+import com.m01project.taskmanager.dto.response.BoardResponse;
+import com.m01project.taskmanager.exception.BoardNotFoundException;
+import com.m01project.taskmanager.exception.DuplicateBoardTitleException;
 import com.m01project.taskmanager.repository.BoardRepository;
+import com.m01project.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
 
-    // CREATE BOARD
+    // ✅ CREATE BOARD
+    @Transactional
     public BoardResponse createBoard(CreateBoardRequest request, User user) {
+
+        // Check duplicate title
+        if (boardRepository.existsByUserAndTitleAndDeletedFalse(user, request.getTitle())) {
+            throw new DuplicateBoardTitleException(request.getTitle());
+        }
+
         Board board = new Board();
-        board.setName(request.getName());
+        board.setTitle(request.getTitle());
         board.setUser(user);
 
         Board saved = boardRepository.save(board);
         return new BoardResponse(saved);
     }
 
-    // LIST BOARDS
-    public Page<BoardResponse> getBoards(User user, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-
+    // ✅ LIST BOARDS (Pageable)
+    public Page<BoardResponse> getBoards(User user, Pageable pageable) {
         return boardRepository
                 .findByUserAndDeletedFalse(user, pageable)
                 .map(BoardResponse::new);
     }
 
-    // SOFT DELETE BOARD
+    // ✅ SOFT DELETE BOARD
+    @Transactional
     public void deleteBoard(Long boardId, User user) {
+
         Board board = boardRepository
                 .findByIdAndUserAndDeletedFalse(boardId, user)
-                .orElseThrow(() -> new RuntimeException("Board not found"));
+                .orElseThrow(() -> new BoardNotFoundException(boardId));
 
         board.setDeleted(true);
         boardRepository.save(board);
     }
 
-    public Board updateBoard(Long boardId,UpdateBoardRequest request) {
+    // ✅ UPDATE BOARD
+    @Transactional
+    public BoardResponse updateBoard(Long boardId, UpdateBoardRequest request, User user) {
 
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("Board not found"));
+        // Check if board exists
+        Board board = boardRepository
+                .findByIdAndUserAndDeletedFalse(boardId, user)
+                .orElseThrow(() -> new BoardNotFoundException(boardId));
 
-        board.setName(request.getName());
+        // Check duplicate title
+        if (boardRepository.existsByUserAndTitleAndDeletedFalse(user, request.getTitle())) {
+            throw new DuplicateBoardTitleException(request.getTitle());
+        }
 
-        return boardRepository.save(board);
+        // Update title
+        board.setTitle(request.getTitle());
+
+        Board updated = boardRepository.save(board);
+        return new BoardResponse(updated);
     }
-
 }

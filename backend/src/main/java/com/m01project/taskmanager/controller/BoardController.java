@@ -6,6 +6,7 @@ import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.dto.request.CreateBoardRequest;
 import com.m01project.taskmanager.service.BoardService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +36,9 @@ public class BoardController {
     @GetMapping
     public ResponseEntity<Page<BoardResponse>> getBoards(
             @AuthenticationPrincipal User user,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            Pageable pageable) {
 
-        return ResponseEntity.ok(boardService.getBoards(user, page, size));
+        return ResponseEntity.ok(boardService.getBoards(user, pageable));
     }
 
     // DELETE BOARD
