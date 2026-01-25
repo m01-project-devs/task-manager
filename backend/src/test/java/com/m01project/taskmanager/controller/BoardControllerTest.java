@@ -1,18 +1,18 @@
 package com.m01project.taskmanager.controller;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.m01project.taskmanager.domain.Board;
+import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
 import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.service.BoardService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class BoardControllerTest {
 
@@ -31,39 +31,48 @@ public class BoardControllerTest {
     public void testUpdateBoard_success() {
         // 1️⃣ Input
         Long boardId = 1L;
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+
         UpdateBoardRequest request = new UpdateBoardRequest();
-        request.setName("Updated Board");
+        request.setTitle("Updated Board");
 
         // 2️⃣ Mock service response
-        Board mockBoard = new Board();
-        mockBoard.setId(boardId);
-        mockBoard.setName("Updated Board");
+        BoardResponse mockResponse = mock(BoardResponse.class);
+        when(mockResponse.getName()).thenReturn("Updated Board");
 
-        when(boardService.updateBoard(boardId, request)).thenReturn(mockBoard);
+        when(boardService.updateBoard(boardId, request, user)).thenReturn(mockResponse);
 
         // 3️⃣ Call controller
-        BoardResponse response = boardController.updateBoard(boardId, request);
+        ResponseEntity<BoardResponse> response = boardController.updateBoard(boardId, request, user);
 
         // 4️⃣ Verify response
         assertNotNull(response);
-        assertEquals("Updated Board", response.getName());
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals("Updated Board", response.getBody().getName());
 
         // 5️⃣ Verify service was called once
-        verify(boardService, times(1)).updateBoard(boardId, request);
+        verify(boardService, times(1)).updateBoard(boardId, request, user);
     }
 
     @Test
     public void testUpdateBoard_invalidRequest() {
         Long boardId = 1L;
-        UpdateBoardRequest request = new UpdateBoardRequest(); // name is null / empty
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+
+        UpdateBoardRequest request = new UpdateBoardRequest(); // title is null / empty
 
         // Mock the service to throw an exception if invalid
-        when(boardService.updateBoard(boardId, request))
+        when(boardService.updateBoard(boardId, request, user))
                 .thenThrow(new IllegalArgumentException("Board name must not be empty"));
 
         // Call controller and assert exception
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            boardController.updateBoard(boardId, request);
+            boardController.updateBoard(boardId, request, user);
         });
 
         // Optional: check exception message

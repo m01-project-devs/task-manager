@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
@@ -109,32 +108,34 @@ class BoardServiceTest {
     }
 
     @Test
-    void updateBoard_shouldUpdateNameAndSave() {
+    void updateBoard_shouldUpdateTitleAndSave() {
         // Arrange
         Long boardId = 1L;
+        User user = new User();
+        user.setId(1L);
 
         Board board = new Board();
         board.setId(boardId);
-        board.setName("Old Name");
+        board.setTitle("Old Title");
 
         UpdateBoardRequest request = new UpdateBoardRequest();
-        request.setName("New Name");
+        request.setTitle("New Title");
 
-        Mockito.when(boardRepository.findById(boardId))
+        when(boardRepository.findByIdAndUserAndDeletedFalse(boardId, user))
                 .thenReturn(Optional.of(board));
 
-        Mockito.when(boardRepository.save(Mockito.any(Board.class)))
+        when(boardRepository.save(any(Board.class)))
                 .thenReturn(board);
 
         // Act
-        Board result = boardService.updateBoard(boardId, request);
+        BoardResponse result = boardService.updateBoard(boardId, request, user);
 
         // Assert
         assertNotNull(result);
-        assertEquals("New Name", result.getName());
+        assertEquals("New Title", result.getName());
 
-        Mockito.verify(boardRepository).findById(boardId);
-        Mockito.verify(boardRepository).save(board);
+        verify(boardRepository).findByIdAndUserAndDeletedFalse(boardId, user);
+        verify(boardRepository).save(board);
     }
 
 
