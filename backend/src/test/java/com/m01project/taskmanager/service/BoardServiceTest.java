@@ -124,7 +124,7 @@ class BoardServiceTest {
         BoardRequest request = new BoardRequest();
         request.setTitle("New Title");
 
-        when(boardRepository.findByIdAndUserAndDeletedFalse(boardId, user))
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user))
                 .thenReturn(Optional.of(board));
 
         when(boardRepository.save(any(Board.class)))
@@ -137,7 +137,7 @@ class BoardServiceTest {
         assertNotNull(result);
         assertEquals("New Title", result.getName());
 
-        verify(boardRepository).findByIdAndUserAndDeletedFalse(boardId, user);
+        verify(boardRepository).findByIdAndUserAndDeletedAtIsNull(boardId, user);
         verify(boardRepository).save(board);
     }
 
