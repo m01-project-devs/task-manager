@@ -105,7 +105,8 @@ public class UserServiceImplTest {
         userService.delete(email);
 
         //then
-        verify(userRepository).deleteById(1L);
+        assertThat(user.getDeletedAt()).isNotNull();
+        verify(userRepository).save(user);
     }
 
     @Test
