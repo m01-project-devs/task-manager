@@ -54,7 +54,7 @@ class PasswordResetServiceTest {
 
     @Test
     void forgotPassword_userExists_savesToken(){
-        when(userRepository.findByEmail("example@gmail.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull("example@gmail.com")).thenReturn(Optional.of(user));
         passwordResetService.forgotPassword("example@gmail.com");
         ArgumentCaptor<PasswordResetToken> captor = ArgumentCaptor.forClass(PasswordResetToken.class);
         verify(passwordResetTokenRepository, times(1)).save(captor.capture());
@@ -70,7 +70,7 @@ class PasswordResetServiceTest {
 
     @Test
     void forgotPassword_userNotExists_doesNotSaveToken() {
-        when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndDeletedAtIsNull("missing@example.com")).thenReturn(Optional.empty());
 
         passwordResetService.forgotPassword("missing@example.com");
 
