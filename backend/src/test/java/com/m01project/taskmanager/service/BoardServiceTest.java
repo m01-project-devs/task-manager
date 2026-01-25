@@ -2,9 +2,8 @@ package com.m01project.taskmanager.service;
 
 import com.m01project.taskmanager.domain.Board;
 import com.m01project.taskmanager.domain.User;
-import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
+import com.m01project.taskmanager.dto.request.BoardRequest;
 import com.m01project.taskmanager.dto.response.BoardResponse;
-import com.m01project.taskmanager.dto.request.CreateBoardRequest;
 import com.m01project.taskmanager.exception.BoardNotFoundException;
 import com.m01project.taskmanager.repository.BoardRepository;
 import org.junit.jupiter.api.Test;
@@ -12,16 +11,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BoardServiceTest {
@@ -36,7 +41,7 @@ class BoardServiceTest {
     void createBoard_shouldSaveBoard() {
         User user = new User();
 
-        CreateBoardRequest request = new CreateBoardRequest();
+        BoardRequest request = new BoardRequest();
         request.setTitle("My Board");
 
         Board savedBoard = new Board();
@@ -118,7 +123,7 @@ class BoardServiceTest {
         board.setId(boardId);
         board.setTitle("Old Title");
 
-        UpdateBoardRequest request = new UpdateBoardRequest();
+        BoardRequest request = new BoardRequest();
         request.setTitle("New Title");
 
         when(boardRepository.findByIdAndUserAndDeletedFalse(boardId, user))

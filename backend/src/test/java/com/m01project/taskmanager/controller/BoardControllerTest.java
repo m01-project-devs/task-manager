@@ -1,7 +1,7 @@
 package com.m01project.taskmanager.controller;
 
 import com.m01project.taskmanager.domain.User;
-import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
+import com.m01project.taskmanager.dto.request.BoardRequest;
 import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.service.BoardService;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ public class BoardControllerTest {
         user.setId(1L);
         user.setEmail("test@example.com");
 
-        UpdateBoardRequest request = new UpdateBoardRequest();
+        BoardRequest request = new BoardRequest();
         request.setTitle("Updated Board");
 
         // 2️⃣ Mock service response
@@ -64,7 +64,7 @@ public class BoardControllerTest {
         user.setId(1L);
         user.setEmail("test@example.com");
 
-        UpdateBoardRequest request = new UpdateBoardRequest(); // title is null / empty
+        BoardRequest request = new BoardRequest(); // title is null / empty
 
         // Mock the service to throw an exception if invalid
         when(boardService.updateBoard(boardId, request, user))

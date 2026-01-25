@@ -2,8 +2,7 @@ package com.m01project.taskmanager.service;
 
 import com.m01project.taskmanager.domain.Board;
 import com.m01project.taskmanager.domain.User;
-import com.m01project.taskmanager.dto.request.CreateBoardRequest;
-import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
+import com.m01project.taskmanager.dto.request.BoardRequest;
 import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.exception.BoardNotFoundException;
 import com.m01project.taskmanager.exception.DuplicateBoardTitleException;
@@ -24,7 +23,7 @@ public class BoardService {
 
     // ✅ CREATE BOARD
     @Transactional
-    public BoardResponse createBoard(CreateBoardRequest request, User user) {
+    public BoardResponse createBoard(BoardRequest request, User user) {
 
         // Check duplicate title
         if (boardRepository.existsByUserAndTitleAndDeletedFalse(user, request.getTitle())) {
@@ -60,7 +59,7 @@ public class BoardService {
 
     // ✅ UPDATE BOARD
     @Transactional
-    public BoardResponse updateBoard(Long boardId, UpdateBoardRequest request, User user) {
+    public BoardResponse updateBoard(Long boardId, BoardRequest request, User user) {
 
         // Check if board exists
         Board board = boardRepository

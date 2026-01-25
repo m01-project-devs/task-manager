@@ -2,7 +2,7 @@ package com.m01project.taskmanager.controller;
 
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.CreateBoardRequest;
-import com.m01project.taskmanager.dto.request.UpdateBoardRequest;
+import com.m01project.taskmanager.dto.request.BoardRequest;
 import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.service.BoardService;
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ public class BoardController {
     // CREATE BOARD
     @PostMapping
     public ResponseEntity<BoardResponse> createBoard(
-            @Valid @RequestBody CreateBoardRequest request,
+            @Valid @RequestBody BoardRequest request,
             @AuthenticationPrincipal User user) {
 
         BoardResponse response = boardService.createBoard(request, user);
@@ -53,7 +53,7 @@ public class BoardController {
     @PutMapping("/{id}")
     public ResponseEntity<BoardResponse> updateBoard(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateBoardRequest request,
+            @Valid @RequestBody BoardRequest request,
             @AuthenticationPrincipal User user
     ) {
         return ResponseEntity.ok(boardService.updateBoard(id, request, user));
