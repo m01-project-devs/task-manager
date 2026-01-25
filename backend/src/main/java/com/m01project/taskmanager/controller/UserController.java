@@ -24,10 +24,9 @@ public class UserController {
 
     @GetMapping("/{email}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable @Valid @NotBlank String email) {
-        return userService.findByEmail(email)
-                .map(user -> new UserResponseDto(user.getEmail(), user.getFirstName(), user.getLastName(), user.getRole().toString()))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        User user = userService.findByEmail(email);
+        UserResponseDto response = new UserResponseDto(user.getEmail(), user.getFirstName(), user.getLastName(), user.getRole().toString());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping

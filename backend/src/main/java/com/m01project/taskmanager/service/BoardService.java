@@ -20,14 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
 
     // ✅ CREATE BOARD
     @Transactional
     public BoardResponse createBoard(CreateBoardRequest request, User user) {
 
         // Check duplicate title
-        if (boardRepository.existsByUserAndTitleAndDeletedFalse(user, request.getTitle())) {
+        if (boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, request.getTitle())) {
             throw new DuplicateBoardTitleException(request.getTitle());
         }
 
@@ -42,7 +41,7 @@ public class BoardService {
     // ✅ LIST BOARDS (Pageable)
     public Page<BoardResponse> getBoards(User user, Pageable pageable) {
         return boardRepository
-                .findByUserAndDeletedFalse(user, pageable)
+                .findByUserAndDeletedAtIsNull(user, pageable)
                 .map(BoardResponse::new);
     }
 
@@ -51,10 +50,9 @@ public class BoardService {
     public void deleteBoard(Long boardId, User user) {
 
         Board board = boardRepository
-                .findByIdAndUserAndDeletedFalse(boardId, user)
+                .findByIdAndUserAndDeletedAtIsNull(boardId, user)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
 
-        board.setDeleted(true);
         boardRepository.save(board);
     }
 
@@ -64,11 +62,11 @@ public class BoardService {
 
         // Check if board exists
         Board board = boardRepository
-                .findByIdAndUserAndDeletedFalse(boardId, user)
+                .findByIdAndUserAndDeletedAtIsNull(boardId, user)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
 
         // Check duplicate title
-        if (boardRepository.existsByUserAndTitleAndDeletedFalse(user, request.getTitle())) {
+        if (boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, request.getTitle())) {
             throw new DuplicateBoardTitleException(request.getTitle());
         }
 

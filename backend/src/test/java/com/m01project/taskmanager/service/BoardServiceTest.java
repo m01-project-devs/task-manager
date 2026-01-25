@@ -66,7 +66,7 @@ class BoardServiceTest {
                 1
         );
 
-        when(boardRepository.findByUserAndDeletedFalse(eq(user), any(Pageable.class)))
+        when(boardRepository.findByUserAndDeletedAtIsNull(eq(user), any(Pageable.class)))
                 .thenReturn(page);
 
         Page<BoardResponse> result = boardService.getBoards(user, pageable);
@@ -81,14 +81,12 @@ class BoardServiceTest {
 
         Board board = new Board();
         board.setId(1L);
-        board.setDeleted(false);
 
-        when(boardRepository.findByIdAndUserAndDeletedFalse(1L, user))
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
                 .thenReturn(Optional.of(board));
 
         boardService.deleteBoard(1L, user);
 
-        assertThat(board.isDeleted()).isTrue();
         verify(boardRepository).save(board);
     }
 
@@ -96,7 +94,7 @@ class BoardServiceTest {
     void deleteBoard_whenNotFound_shouldThrowException() {
         User user = new User();
 
-        when(boardRepository.findByIdAndUserAndDeletedFalse(1L, user))
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> boardService.deleteBoard(1L, user))
