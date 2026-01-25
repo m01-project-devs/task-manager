@@ -5,6 +5,7 @@ import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.BoardRequest;
 import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.exception.BoardNotFoundException;
+import com.m01project.taskmanager.exception.DuplicateBoardTitleException;
 import com.m01project.taskmanager.repository.BoardRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -55,6 +57,22 @@ class BoardServiceTest {
 
         assertThat(response.getName()).isEqualTo("My Board");
         verify(boardRepository).save(any(Board.class));
+    }
+
+    @Test
+    void createBoard_whenDuplicateTitle_shouldThrowException() {
+        User user = new User();
+
+        BoardRequest request = new BoardRequest();
+        request.setTitle("My Board");
+
+        when(boardRepository.existsByUserAndTitleAndDeletedFalse(user, "My Board"))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> boardService.createBoard(request, user))
+                .isInstanceOf(DuplicateBoardTitleException.class);
+
+        verify(boardRepository, never()).save(any(Board.class));
     }
 
     @Test
@@ -143,5 +161,45 @@ class BoardServiceTest {
         verify(boardRepository).save(board);
     }
 
+    @Test
+    void updateBoard_whenNotFound_shouldThrowException() {
+        Long boardId = 1L;
+        User user = new User();
+
+        BoardRequest request = new BoardRequest();
+        request.setTitle("New Title");
+
+        when(boardRepository.findByIdAndUserAndDeletedFalse(boardId, user))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> boardService.updateBoard(boardId, request, user))
+                .isInstanceOf(BoardNotFoundException.class)
+                .hasMessage("Board not found with id: 1");
+
+        verify(boardRepository, never()).save(any(Board.class));
+    }
+
+    @Test
+    void updateBoard_whenDuplicateTitle_shouldThrowException() {
+        Long boardId = 1L;
+        User user = new User();
+
+        Board board = new Board();
+        board.setId(boardId);
+        board.setTitle("Old Title");
+
+        BoardRequest request = new BoardRequest();
+        request.setTitle("Old Title");
+
+        when(boardRepository.findByIdAndUserAndDeletedFalse(boardId, user))
+                .thenReturn(Optional.of(board));
+        when(boardRepository.existsByUserAndTitleAndDeletedFalse(user, "Old Title"))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> boardService.updateBoard(boardId, request, user))
+                .isInstanceOf(DuplicateBoardTitleException.class);
+
+        verify(boardRepository, never()).save(any(Board.class));
+    }
 
 }
