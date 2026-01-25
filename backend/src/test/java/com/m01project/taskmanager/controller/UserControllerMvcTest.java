@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.UserCreateRequestDto;
 import com.m01project.taskmanager.dto.request.UserUpdateRequestDto;
+import com.m01project.taskmanager.exception.ResourceNotFoundException;
 import com.m01project.taskmanager.security.JwtAuthenticationFilter;
 import com.m01project.taskmanager.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ class UserControllerMvcTest {
     void getUser_WhenUserExists() throws Exception {
         User user = new User("test@example.com", "12345678", "Joe", "Duo");
 
-        when(userService.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userService.findByEmail(user.getEmail())).thenReturn(user);
 
         mockMvc.perform(get("/api/users/test@example.com"))
                 .andExpect(status().isOk())
@@ -67,7 +68,8 @@ class UserControllerMvcTest {
 
     @Test
     void getUser_WhenUserDoesntExist_ReturnUserNotFound() throws Exception {
-        when(userService.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
+        when(userService.findByEmail("notfound@example.com"))
+                .thenThrow(new ResourceNotFoundException("User is not found."));
 
         mockMvc.perform(get("/api/users/notfound@example.com"))
                 .andExpect(status().isNotFound());

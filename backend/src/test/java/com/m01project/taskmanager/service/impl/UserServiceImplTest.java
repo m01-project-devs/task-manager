@@ -54,7 +54,7 @@ public class UserServiceImplTest {
     @Test
     void createUser_WhenUserAlreadyExists_ShouldThrowException() {
         UserCreateRequestDto request = new UserCreateRequestDto("test@example.com", "12345678", "Joe", "Duo");
-        when(userRepository.existsByEmail("test@example.com")).thenReturn(true);
+        when(userRepository.existsByEmailAndDeletedAtIsNull("test@example.com")).thenReturn(true);
         assertThatThrownBy(()-> userService.create(request))
                 .isInstanceOf(UserAlreadyExistsException.class)
                 .hasMessageContaining("User already exists.");
@@ -70,7 +70,7 @@ public class UserServiceImplTest {
         // Mock password encoder since UserServiceImpl uses it to encode the new password
         // This was added to fix NullPointerException when passwordEncoder was null
         when(passwordEncoder.encode("newPass")).thenReturn("encodedNewPass");
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByEmailAndDeletedAtIsNull("test@example.com")).thenReturn(Optional.of(existingUser));
         when(userRepository.save(existingUser)).thenReturn(existingUser);
         User updatedUser = userService.update(email, request);
 
@@ -87,7 +87,7 @@ public class UserServiceImplTest {
     void updateUser_WhenUserNotExist_ShouldThrowException() {
         String email = "notFound@example.com";
         UserUpdateRequestDto request = new UserUpdateRequestDto("pass", "Joe", "Duo");
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.empty());
         assertThatThrownBy(()->userService.update(email, request))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("User not found.");
@@ -99,13 +99,14 @@ public class UserServiceImplTest {
         String email = "test@example.com";
         User user = new User("test@example.com", "12345678", "Joe", "Duo");
         user.setId(1L);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.of(user));
 
         //when
         userService.delete(email);
 
         //then
-        verify(userRepository).deleteById(1L);
+        assertThat(user.getDeletedAt()).isNotNull();
+        verify(userRepository).save(user);
     }
 
     @Test
@@ -115,7 +116,7 @@ public class UserServiceImplTest {
         user.setId(1L);
         user.setRole(Role.ADMIN);
 
-        when(userRepository.findByEmail(email))
+        when(userRepository.findByEmailAndDeletedAtIsNull(email))
                 .thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> userService.delete(email))
@@ -127,7 +128,7 @@ public class UserServiceImplTest {
     @Test
     void deleteUser_WhenUserNotExist() {
         String email = "notFound@example.com";
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.delete(email))
                 .isInstanceOf(ResourceNotFoundException.class);
