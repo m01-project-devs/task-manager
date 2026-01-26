@@ -14,16 +14,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
@@ -62,6 +65,18 @@ public class UserServiceImplTest {
     }
 
     @Test
+    void createUser_WhenAdminRoleAssigned_ShouldThrowException() {
+        UserCreateRequestDto request = new UserCreateRequestDto(
+                "test@example.com", "12345678", "Joe", "Duo", "ADMIN");
+
+        assertThatThrownBy(() -> userService.create(request))
+                .isInstanceOf(InvalidRoleAssignmentException.class)
+                .hasMessageContaining("Admin role can not be assigned.");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
     void updateUser_WhenUserExists() {
         String email = "test@example.com";
         UserUpdateRequestDto request = new UserUpdateRequestDto("newPass", "John", "Smith");
@@ -81,6 +96,18 @@ public class UserServiceImplTest {
                 .extracting("firstName", "lastName")
                 .containsExactly("John", "Smith");
         verify(userRepository).save(existingUser);
+    }
+
+    @Test
+    void updateUser_WhenAdminRoleAssigned_ShouldThrowException() {
+        String email = "test@example.com";
+        UserUpdateRequestDto request = new UserUpdateRequestDto("newPass", "John", "Smith", "ADMIN");
+
+        assertThatThrownBy(() -> userService.update(email, request))
+                .isInstanceOf(InvalidRoleAssignmentException.class)
+                .hasMessageContaining("Admin role can not be assigned.");
+
+        verify(userRepository, never()).save(any());
     }
 
     @Test
@@ -134,5 +161,36 @@ public class UserServiceImplTest {
                 .isInstanceOf(ResourceNotFoundException.class);
 
         verify(userRepository,never()).deleteById(any());
+    }
+
+    @Test
+    void findByEmail_shouldReturnRepositoryResult() {
+        String email = "test@example.com";
+        User user = new User("test@example.com", "12345678", "Joe", "Duo");
+
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.of(user));
+
+        User result = userService.findByEmail(email);
+
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getFirstName(), result.getFirstName());
+        assertEquals(user.getLastName(), result.getLastName());
+        assertEquals(user.getRole(), result.getRole());
+        verify(userRepository).findByEmailAndDeletedAtIsNull(email);
+    }
+
+    @Test
+    void getUsers_shouldReturnPageFromRepository() {
+        User user = new User("test@example.com", "12345678", "Joe", "Duo");
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<User> page = new PageImpl<>(List.of(user), pageable, 1);
+
+        when(userRepository.findAll(pageable)).thenReturn(page);
+
+        Page<User> result = userService.getUsers(pageable);
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent()).containsExactly(user);
+        verify(userRepository).findAll(pageable);
     }
 }

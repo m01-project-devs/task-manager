@@ -37,7 +37,7 @@ done
 
 # Also try using docker-compose down with all profiles
 echo -e "${GREEN}Running docker-compose down for all profiles...${NC}"
-$DOCKER_COMPOSE -f docker-compose.local.yml --profile all down --remove-orphans --volumes 2>/dev/null || true
+$DOCKER_COMPOSE -f docker-compose.yml --profile all down --remove-orphans --volumes 2>/dev/null || true
 $DOCKER_COMPOSE -f docker-compose.cloud.yml --profile all down --remove-orphans --volumes 2>/dev/null || true
 
 # Clean up any remaining task-manager network

@@ -167,4 +167,25 @@ class PasswordResetServiceTest {
         verify(userRepository, times(1)).save(user);
         verify(passwordResetTokenRepository, times(1)).save(token);
     }
+
+    @Test
+    void resetPassword_tokenUserMissing_throwsInvalidTokenException() {
+        UUID tokenValue = UUID.randomUUID();
+        PasswordResetToken token = PasswordResetToken.builder()
+                .token(tokenValue)
+                .user(null)
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
+                .usedAt(null)
+                .build();
+
+        when(passwordResetTokenRepository.findByToken(tokenValue)).thenReturn(Optional.of(token));
+
+        assertThrows(InvalidTokenException.class,
+                () -> passwordResetService.resetPassword(tokenValue.toString(), "NewPass123!"));
+
+        verify(passwordResetTokenRepository, times(1)).findByToken(tokenValue);
+        verifyNoInteractions(passwordEncoder);
+        verify(userRepository, never()).save(any());
+        verify(passwordResetTokenRepository, never()).save(any(PasswordResetToken.class));
+    }
 }
