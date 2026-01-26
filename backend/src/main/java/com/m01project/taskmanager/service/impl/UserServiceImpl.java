@@ -65,6 +65,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<User> getUsersOnly(Pageable pageable) {
+        return userRepository.findAllByRoleEqualsAndDeletedAtIsNull(Role.USER, pageable);
+    }
+
+    @Override
+    public Page<User> getAdminsOnly(Pageable pageable) {
+        return userRepository.findAllByRoleEqualsAndDeletedAtIsNull(Role.ADMIN, pageable);
+    }
+
+    @Override
     public void delete(String email) {
         Optional<User> optionalUser = userRepository.findByEmailAndDeletedAtIsNull(email);
         if(optionalUser.isEmpty()) {throw new ResourceNotFoundException("user not found.");}

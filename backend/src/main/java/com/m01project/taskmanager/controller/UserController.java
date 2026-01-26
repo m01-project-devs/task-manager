@@ -4,7 +4,6 @@ import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.UserCreateRequestDto;
 import com.m01project.taskmanager.dto.request.UserUpdateRequestDto;
 import com.m01project.taskmanager.dto.response.UserResponseDto;
-import com.m01project.taskmanager.exception.ResourceNotFoundException;
 import com.m01project.taskmanager.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -32,6 +31,16 @@ public class UserController {
     @GetMapping
     public Page<User> getUsers(Pageable pageable) {
         return userService.getUsers(pageable);
+    }
+
+    @GetMapping("/users-only")
+    public Page<User> getUsersOnly(Pageable pageable) {
+        return userService.getUsersOnly(pageable);
+    }
+
+    @GetMapping("/admins-only")
+    public Page<User> getAdminsOnly(Pageable pageable) {
+        return userService.getAdminsOnly(pageable);
     }
 
     @PostMapping
