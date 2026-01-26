@@ -7,7 +7,7 @@ CONTRIBUTING.md
 .mvn
 frontend/
 instructions/
-docker-compose.local.yml
+docker-compose.yml
 run-docker.sh
 stop-docker.sh
 .DS_Store

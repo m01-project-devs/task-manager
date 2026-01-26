@@ -31,7 +31,7 @@ public class PasswordResetService {
 
     // Email enumeration önlemek için: user yoksa bile sessiz dön
     public void forgotPassword(String email){
-        userRepository.findByEmail(email).ifPresent(user -> {
+        userRepository.findByEmailAndDeletedAtIsNull(email).ifPresent(user -> {
             PasswordResetToken token = PasswordResetToken.builder()
                     .user(user)
                     .token(UUID.randomUUID())

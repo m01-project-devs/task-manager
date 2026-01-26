@@ -9,7 +9,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
@@ -18,73 +17,30 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex) {
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.NOT_FOUND.value()
-        );
+    @ExceptionHandler({ResourceNotFoundException.class,
+            BoardNotFoundException.class})
+    public ResponseEntity<?> handleNotFound(RuntimeException ex) {
+        ErrorResponseDto error = createResponse(ex, HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidRoleAssignmentException.class)
     public ResponseEntity<?> handleInvalidRoleAssignment(InvalidRoleAssignmentException ex) {
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.FORBIDDEN.value()
-        );
+        ErrorResponseDto error = createResponse(ex, HttpStatus.FORBIDDEN.value());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<?> handleAlreadyExists(UserAlreadyExistsException ex) {
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.CONFLICT.value()
-        );
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(EmailAlreadyUsedException.class)
-    public ResponseEntity<?> handleEmailAlreadyUsed(EmailAlreadyUsedException ex) {
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.CONFLICT.value()
-        );
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(BoardNotFoundException.class)
-    public ResponseEntity<?> handleBoardNotFound(BoardNotFoundException ex) {
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.NOT_FOUND.value()
-        );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(DuplicateBoardTitleException.class)
-    public ResponseEntity<?> handleDuplicateBoardTitle(DuplicateBoardTitleException ex) {
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.CONFLICT.value()
-        );
+    @ExceptionHandler({UserAlreadyExistsException.class,
+                      EmailAlreadyUsedException.class,
+                      DuplicateBoardTitleException.class})
+    public ResponseEntity<?> handleConflict(RuntimeException ex) {
+        ErrorResponseDto error = createResponse(ex, HttpStatus.CONFLICT.value());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
     public ResponseEntity<?> handleAuthenticationException(Exception ex) {
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.UNAUTHORIZED.value()
-        );
+        ErrorResponseDto error = createResponse(ex, HttpStatus.UNAUTHORIZED.value());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
@@ -105,11 +61,8 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .collect(Collectors.joining(", "));
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                errorMessage,
-                HttpStatus.BAD_REQUEST.value()
-        );
+
+        ErrorResponseDto error = createResponse(ex, HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -121,11 +74,7 @@ public class GlobalExceptionHandler {
                 .map(v -> v.getPropertyPath() + ": " + v.getMessage())
                 .collect(Collectors.joining(", "));
 
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                errorMessage,
-                HttpStatus.BAD_REQUEST.value()
-        );
+        ErrorResponseDto error = createResponse(ex, HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
@@ -142,11 +91,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneralException(Exception ex) {
-        ErrorResponseDto error = new ErrorResponseDto(
+        ErrorResponseDto error = createResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({InvalidTokenException.class,
+                       TokenAlreadyUsedException.class,
+                       TokenExpiredException.class})
+    public ResponseEntity<ErrorResponseDto> handleInvalidToken(RuntimeException ex){
+        ErrorResponseDto error = createResponse(ex, HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    public ErrorResponseDto createResponse(Exception ex, int status) {
+        return new ErrorResponseDto(
                 LocalDateTime.now(),
                 ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value()
+                status
         );
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
