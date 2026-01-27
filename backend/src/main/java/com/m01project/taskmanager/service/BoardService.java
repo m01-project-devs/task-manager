@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -52,6 +54,7 @@ public class BoardService {
                 .findByIdAndUserAndDeletedAtIsNull(boardId, user)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
 
+        board.setDeletedAt(LocalDateTime.now());
         boardRepository.save(board);
     }
 
