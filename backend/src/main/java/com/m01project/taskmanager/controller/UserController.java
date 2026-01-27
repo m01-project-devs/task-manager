@@ -42,7 +42,7 @@ public class UserController {
         return ResponseEntity.created(location).body(response);
     }
 
-    @PutMapping("/{email}")
+    @PatchMapping("/{email}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable @Valid String email,
                                                       @RequestBody @Valid UserUpdateRequestDto request) {
         User updated = userService.update(email, request);
