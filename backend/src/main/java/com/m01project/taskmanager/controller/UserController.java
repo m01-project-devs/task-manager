@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 import java.net.URI;
 
@@ -20,6 +21,11 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/search")
+    public List<User> searchUsers(@RequestParam String query) {
+        return userService.search(query);
+    }
 
     @GetMapping("/{email}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable @Valid @NotBlank String email) {
