@@ -2,8 +2,9 @@ package com.m01project.taskmanager.domain;
 
 import com.m01project.taskmanager.domain.Base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -11,8 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "board",
         indexes = {
-                @Index(name = "idx_board_user_id", columnList = "user_id"),
-                @Index(name = "idx_board_is_deleted", columnList = "is_deleted")
+                @Index(name = "idx_board_user_id", columnList = "user_id")
         })
 public class Board extends BaseEntity {
 

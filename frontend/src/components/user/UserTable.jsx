@@ -17,28 +17,29 @@ import UserRow from "./UserRow";
 import ConfirmDialog from "../common/ConfirmDialog";
 import { updateUser, deleteUser } from "../../api/userAPI";
 
-export default function UserTable({ users, reload, enqueueSnackbar }) {
+export default function UserTable({
+  users,
+  reload,
+  enqueueSnackbar,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+}) {
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(null);
 
   /* ---------- FILTER ---------- */
   const filteredUsers = useMemo(() => {
-    return users.filter((u) =>
+    let data = users.content || [];
+    return data.filter((u) =>
       `${u.email} ${u.firstName} ${u.lastName} ${u.role}`
         .toLowerCase()
         .includes(search.toLowerCase()),
     );
   }, [users, search]);
-
-  /* ---------- PAGINATION ---------- */
-  const paginatedUsers = filteredUsers.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
 
   /* ---------- ACTIONS ---------- */
   const handleUpdate = async (email, payload) => {
@@ -76,7 +77,7 @@ export default function UserTable({ users, reload, enqueueSnackbar }) {
                     value={search}
                     onChange={(e) => {
                       setSearch(e.target.value);
-                      setPage(0);
+                      onPageChange(0);
                     }}
                     InputProps={{
                       startAdornment: (
@@ -101,7 +102,7 @@ export default function UserTable({ users, reload, enqueueSnackbar }) {
             </TableHead>
 
             <TableBody>
-              {paginatedUsers.map((u, index) => (
+              {filteredUsers.map((u, index) => (
                 <UserRow
                   key={u.email}
                   index={page * rowsPerPage + index}
@@ -117,13 +118,13 @@ export default function UserTable({ users, reload, enqueueSnackbar }) {
         {/* PAGINATION */}
         <TablePagination
           component="div"
-          count={filteredUsers.length}
+          count={users.totalElements || 0}
           page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
+          onPageChange={(_, newPage) => onPageChange(newPage)}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
+            onRowsPerPageChange(parseInt(e.target.value, 10));
+            onPageChange(0);
           }}
           rowsPerPageOptions={[5, 10, 25]}
         />
