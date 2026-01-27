@@ -51,11 +51,12 @@ public class UserServiceImpl implements UserService {
         if (request.getRole() != null && request.getRole().equalsIgnoreCase("ADMIN")) {
             throw new InvalidRoleAssignmentException("Admin role can not be assigned.");
         }
-        User updated = userRepository.findByEmailAndDeletedAtIsNull(email)
-                .orElseThrow(()->new ResourceNotFoundException("User not found."));
-        if(request.getPassword() != null) updated.setPassword(passwordEncoder.encode(request.getPassword()));
-        if(request.getFirstName() != null) updated.setFirstName(request.getFirstName());
-        if(request.getLastName() != null )updated.setLastName(request.getLastName());
+        Optional<User> user = userRepository.findByEmailAndDeletedAtIsNull(email);
+        if(user.isEmpty()) throw new ResourceNotFoundException("User not found.");
+        User updated = user.get();
+        updated.setPassword(passwordEncoder.encode(request.getPassword()));
+        updated.setFirstName(request.getFirstName());
+        updated.setLastName(request.getLastName());
         return userRepository.save(updated);
     }
 
