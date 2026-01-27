@@ -1,7 +1,6 @@
 package com.m01project.taskmanager.service;
 
 import com.m01project.emailsender.application.port.EmailSender;
-import com.m01project.emailsender.application.service.PasswordResetEmailComposer;
 import com.m01project.taskmanager.domain.PasswordResetToken;
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.exception.InvalidTokenException;
