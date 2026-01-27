@@ -8,7 +8,7 @@ import { blue } from "@mui/material/colors";
 const theme = createTheme({
   palette: {
     mode: "light",
-    primary: blue
+    primary: blue,
   },
 });
 
@@ -18,5 +18,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <CssBaseline />
       <App />
     </ThemeProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

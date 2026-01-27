@@ -26,7 +26,7 @@ public class AuthService {
     public UserResponse register(RegisterRequest request) {
 
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmailAndDeletedAtIsNull(request.getEmail())) {
             throw new EmailAlreadyUsedException("Email is already in use");
         }
 
@@ -45,7 +45,7 @@ public class AuthService {
     public LoginResponseDto login(LoginRequestDto request) {
 
         // Find user by email
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmailAndDeletedAtIsNull(request.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
 

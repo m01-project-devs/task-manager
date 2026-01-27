@@ -4,6 +4,7 @@ import com.m01project.taskmanager.domain.Role;
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.UserCreateRequestDto;
 import com.m01project.taskmanager.dto.request.UserUpdateRequestDto;
+import com.m01project.taskmanager.exception.InvalidRoleAssignmentException;
 import com.m01project.taskmanager.exception.ResourceNotFoundException;
 import com.m01project.taskmanager.exception.UserAlreadyExistsException;
 import com.m01project.taskmanager.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,37 +26,37 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findByEmail(String email) {
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(()->new ResourceNotFoundException("User is not found."));
     }
 
     @Override
     public User create(UserCreateRequestDto request) {
-        String email = request.getEmail();
-        boolean exists = userRepository.existsByEmail(email);
+        if (request.getRole() != null && request.getRole().equalsIgnoreCase("ADMIN")) {
+            throw new InvalidRoleAssignmentException("Admin role can not be assigned.");
+        }
+        boolean exists = userRepository.existsByEmailAndDeletedAtIsNull(request.getEmail());
         if(exists) throw new UserAlreadyExistsException("User already exists.");
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        if (request.getRole() != null && request.getRole().equalsIgnoreCase("ADMIN")) {
-            user.setRole(Role.ADMIN);
-        }
         return userRepository.save(user);
     }
 
     @Override
     public User update(String email, UserUpdateRequestDto request) {
-        Optional<User> user = userRepository.findByEmail(email);
+        if (request.getRole() != null && request.getRole().equalsIgnoreCase("ADMIN")) {
+            throw new InvalidRoleAssignmentException("Admin role can not be assigned.");
+        }
+        Optional<User> user = userRepository.findByEmailAndDeletedAtIsNull(email);
         if(user.isEmpty()) throw new ResourceNotFoundException("User not found.");
         User updated = user.get();
         updated.setPassword(passwordEncoder.encode(request.getPassword()));
         updated.setFirstName(request.getFirstName());
         updated.setLastName(request.getLastName());
-        if (request.getRole() != null && request.getRole().equalsIgnoreCase("ADMIN")) {
-            updated.setRole(Role.ADMIN);
-        }
         return userRepository.save(updated);
     }
 
@@ -64,10 +66,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean delete(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isEmpty()) return false;
-        userRepository.deleteById(user.get().getId());
-        return true;
+    public void delete(String email) {
+        Optional<User> optionalUser = userRepository.findByEmailAndDeletedAtIsNull(email);
+        if(optionalUser.isEmpty()) {throw new ResourceNotFoundException("user not found.");}
+        User user = optionalUser.get();
+        if(user.getRole() == Role.ADMIN) {
+            throw new InvalidRoleAssignmentException("admin users can not be deleted.");
+        }
+        user.setDeletedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 }

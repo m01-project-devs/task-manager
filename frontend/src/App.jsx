@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import HomePage from "./pages/HomePage";
+import BoardPage from "./pages/BoardPage";
+import TodoPage from "./pages/TodoPage";
+import AdminUserPage from "./pages/AdminUserPage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AuthLayout from "./components/layout/AuthLayout";
@@ -14,7 +15,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* AUTH PAGES */}
         <Route
           path="/login"
           element={
@@ -23,7 +23,6 @@ function App() {
             </AuthLayout>
           }
         />
-
         <Route
           path="/register"
           element={
@@ -33,13 +32,34 @@ function App() {
           }
         />
 
-        {/* HOME */}
         <Route
-          path="/home"
+          path="/boards"
           element={
             <ProtectedRoute>
               <HomeLayout>
-                <HomePage />
+                <BoardPage />
+              </HomeLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/boards/:boardId"
+          element={
+            <ProtectedRoute>
+              <HomeLayout>
+                <TodoPage />
+              </HomeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin User Page */}
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute requireRole="ADMIN">
+              <HomeLayout>
+                <AdminUserPage />
               </HomeLayout>
             </ProtectedRoute>
           }
