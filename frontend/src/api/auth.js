@@ -1,3 +1,5 @@
+import axios from "./axios";
+
 const API_BASE = import.meta.env.VITE_API_URL;
 
 export async function resetPassword(token, newPassword) {
@@ -16,3 +18,8 @@ export async function resetPassword(token, newPassword) {
     throw new Error(msg);
   }
 }
+
+export function forgotPassword(email) {
+  return axios.post("/api/auth/forgot-password", { email });
+}
+

@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 import BoardPage from "./pages/BoardPage";
 import TodoPage from "./pages/TodoPage";
 import AdminUserPage from "./pages/AdminUserPage";
@@ -42,6 +43,15 @@ function App() {
                <ResetPassword />
              </AuthLayout>
            }
+        />
+
+        <Route
+            path="/forgot-password"
+            element={
+                <AuthLayout>
+                    <ForgotPassword />
+                </AuthLayout>
+            }
         />
 
         {/* HOME */}
