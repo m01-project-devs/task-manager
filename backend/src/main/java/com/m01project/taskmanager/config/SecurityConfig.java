@@ -2,6 +2,7 @@ package com.m01project.taskmanager.config;
 
 import com.m01project.taskmanager.security.JwtAuthenticationEntryPoint;
 import com.m01project.taskmanager.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -108,8 +109,16 @@ public class SecurityConfig {
                 // Configure custom exception handling to return 401 for authentication failures
                 // This is important: by default, Spring Security returns 403 (Forbidden)
                 // but 401 (Unauthorized) is more semantically correct for authentication issues
-                .exceptionHandling(exception ->
-                        exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        // Return 403 Forbidden when authenticated user lacks required role/permission
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("""
+                                    {"error": "Access denied - insufficient permissions"}
+                                    """);
+                        })
                 )
 
                 // Set the authentication provider

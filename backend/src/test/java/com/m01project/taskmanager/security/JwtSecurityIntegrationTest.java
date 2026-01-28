@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * For JWT authentication issues, 401 is semantically correct.</p>
  *
  * @see JwtAuthenticationEntryPoint which ensures 401 is returned
- * @see SecurityConfig where the entry point is configured
+ * @see com.m01project.taskmanager.config.SecurityConfig where the entry point is configured
  */
 class JwtSecurityIntegrationTest extends BaseIntegrationTest {
 
