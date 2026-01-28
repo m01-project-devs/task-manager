@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.nio.file.Paths;
 
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.m01project")
 public class TaskManagerApplication {
 
 	public static void main(String[] args) {

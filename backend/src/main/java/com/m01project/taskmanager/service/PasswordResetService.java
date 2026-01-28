@@ -1,5 +1,6 @@
 package com.m01project.taskmanager.service;
 
+import com.m01project.emailsender.application.port.EmailSender;
 import com.m01project.taskmanager.domain.PasswordResetToken;
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.exception.InvalidTokenException;
@@ -24,6 +25,9 @@ public class PasswordResetService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private final EmailSender emailSender;
+    private final PasswordResetEmailComposer emailComposer;
+
     // Email enumeration önlemek için: user yoksa bile sessiz dön
     public void forgotPassword(String email){
         userRepository.findByEmailAndDeletedAtIsNull(email).ifPresent(user -> {
@@ -34,6 +38,8 @@ public class PasswordResetService {
                     .usedAt(null)
                     .build();
             passwordResetTokenRepository.save(token);
+
+            emailSender.send(emailComposer.compose(user.getEmail(), token.getToken()));
         });
     }
 
