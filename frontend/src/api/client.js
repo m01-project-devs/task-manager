@@ -1,12 +1,16 @@
-import { API_BASE_URL } from '../config/apiConfig';
+import api from "./axios";
 
 export async function pingBackend() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/users`); // examplary endpoint
-    console.log('Backend ping status:', res.status);
-    return res.ok;
+    const res = await api.get("/users");
+    console.log("Backend ping status:", res.status);
+    return res.status >= 200 && res.status < 300;
   } catch (err) {
-    console.error('Backend ping failed:', err);
+    if (err.response) {
+      console.error("Backend ping failed:", err.response.status);
+    } else {
+      console.error("Backend ping failed:", err.message);
+    }
     return false;
   }
 }

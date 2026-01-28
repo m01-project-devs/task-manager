@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { authTextFieldSx } from "../components/form/TextFieldStyles";
+import { API_BASE_URL } from "../config/apiConfig";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/register", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, firstName, lastName }),
@@ -167,7 +168,7 @@ const RegisterPage = () => {
           </Box>
           <Typography variant="body2" sx={{ mt: 2 }}>
             Already have an account?{" "}
-            <Link component={RouterLink} sx={{ color: "white" }} to="/login">
+            <Link component={RouterLink} to="/login">
               Login
             </Link>
           </Typography>

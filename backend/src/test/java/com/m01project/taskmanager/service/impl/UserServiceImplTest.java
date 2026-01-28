@@ -14,16 +14,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
@@ -54,10 +57,22 @@ public class UserServiceImplTest {
     @Test
     void createUser_WhenUserAlreadyExists_ShouldThrowException() {
         UserCreateRequestDto request = new UserCreateRequestDto("test@example.com", "12345678", "Joe", "Duo");
-        when(userRepository.existsByEmail("test@example.com")).thenReturn(true);
+        when(userRepository.existsByEmailAndDeletedAtIsNull("test@example.com")).thenReturn(true);
         assertThatThrownBy(()-> userService.create(request))
                 .isInstanceOf(UserAlreadyExistsException.class)
                 .hasMessageContaining("User already exists.");
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void createUser_WhenAdminRoleAssigned_ShouldThrowException() {
+        UserCreateRequestDto request = new UserCreateRequestDto(
+                "test@example.com", "12345678", "Joe", "Duo", "ADMIN");
+
+        assertThatThrownBy(() -> userService.create(request))
+                .isInstanceOf(InvalidRoleAssignmentException.class)
+                .hasMessageContaining("Admin role can not be assigned.");
+
         verify(userRepository, never()).save(any());
     }
 
@@ -70,7 +85,7 @@ public class UserServiceImplTest {
         // Mock password encoder since UserServiceImpl uses it to encode the new password
         // This was added to fix NullPointerException when passwordEncoder was null
         when(passwordEncoder.encode("newPass")).thenReturn("encodedNewPass");
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByEmailAndDeletedAtIsNull("test@example.com")).thenReturn(Optional.of(existingUser));
         when(userRepository.save(existingUser)).thenReturn(existingUser);
         User updatedUser = userService.update(email, request);
 
@@ -84,10 +99,22 @@ public class UserServiceImplTest {
     }
 
     @Test
+    void updateUser_WhenAdminRoleAssigned_ShouldThrowException() {
+        String email = "test@example.com";
+        UserUpdateRequestDto request = new UserUpdateRequestDto("newPass", "John", "Smith", "ADMIN");
+
+        assertThatThrownBy(() -> userService.update(email, request))
+                .isInstanceOf(InvalidRoleAssignmentException.class)
+                .hasMessageContaining("Admin role can not be assigned.");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
     void updateUser_WhenUserNotExist_ShouldThrowException() {
         String email = "notFound@example.com";
         UserUpdateRequestDto request = new UserUpdateRequestDto("pass", "Joe", "Duo");
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.empty());
         assertThatThrownBy(()->userService.update(email, request))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("User not found.");
@@ -99,13 +126,14 @@ public class UserServiceImplTest {
         String email = "test@example.com";
         User user = new User("test@example.com", "12345678", "Joe", "Duo");
         user.setId(1L);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.of(user));
 
         //when
         userService.delete(email);
 
         //then
-        verify(userRepository).deleteById(1L);
+        assertThat(user.getDeletedAt()).isNotNull();
+        verify(userRepository).save(user);
     }
 
     @Test
@@ -115,7 +143,7 @@ public class UserServiceImplTest {
         user.setId(1L);
         user.setRole(Role.ADMIN);
 
-        when(userRepository.findByEmail(email))
+        when(userRepository.findByEmailAndDeletedAtIsNull(email))
                 .thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> userService.delete(email))
@@ -127,11 +155,42 @@ public class UserServiceImplTest {
     @Test
     void deleteUser_WhenUserNotExist() {
         String email = "notFound@example.com";
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.delete(email))
                 .isInstanceOf(ResourceNotFoundException.class);
 
         verify(userRepository,never()).deleteById(any());
+    }
+
+    @Test
+    void findByEmail_shouldReturnRepositoryResult() {
+        String email = "test@example.com";
+        User user = new User("test@example.com", "12345678", "Joe", "Duo");
+
+        when(userRepository.findByEmailAndDeletedAtIsNull(email)).thenReturn(Optional.of(user));
+
+        User result = userService.findByEmail(email);
+
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getFirstName(), result.getFirstName());
+        assertEquals(user.getLastName(), result.getLastName());
+        assertEquals(user.getRole(), result.getRole());
+        verify(userRepository).findByEmailAndDeletedAtIsNull(email);
+    }
+
+    @Test
+    void getUsers_shouldReturnPageFromRepository() {
+        User user = new User("test@example.com", "12345678", "Joe", "Duo");
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<User> page = new PageImpl<>(List.of(user), pageable, 1);
+
+        when(userRepository.findAll(pageable)).thenReturn(page);
+
+        Page<User> result = userService.getUsers(pageable);
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent()).containsExactly(user);
+        verify(userRepository).findAll(pageable);
     }
 }

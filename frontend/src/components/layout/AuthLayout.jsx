@@ -8,7 +8,7 @@ export default function AuthLayout({ children }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundImage: "url('./public/background.png')",
+        backgroundImage: "url('/background.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
