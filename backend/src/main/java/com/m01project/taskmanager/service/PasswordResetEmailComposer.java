@@ -1,11 +1,9 @@
-package com.m01project.emailsender.application.service;
+package com.m01project.taskmanager.service;
 
 import com.m01project.emailsender.application.port.EmailMessage;
-import com.m01project.emailsender.application.port.EmailSender;
-import com.m01project.emailsender.infrastructure.config.FrontendProperties;
+import com.m01project.taskmanager.config.FrontendProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.UUID;
@@ -14,9 +12,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PasswordResetEmailComposer {
 
-    private  final FrontendProperties frontend;
+    private final FrontendProperties frontend;
 
-    public EmailMessage compose(String to,UUID token){
+    public EmailMessage compose(String to, UUID token) {
         String link = UriComponentsBuilder
                 .fromHttpUrl(frontend.baseUrl())
                 .path(frontend.resetPasswordPath())
