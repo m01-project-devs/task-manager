@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.UserCreateRequestDto;
 import com.m01project.taskmanager.dto.request.UserUpdateRequestDto;
+import com.m01project.taskmanager.exception.ResourceNotFoundException;
 import com.m01project.taskmanager.security.JwtAuthenticationFilter;
 import com.m01project.taskmanager.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -19,18 +20,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -55,7 +51,7 @@ class UserControllerMvcTest {
     void getUser_WhenUserExists() throws Exception {
         User user = new User("test@example.com", "12345678", "Joe", "Duo");
 
-        when(userService.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userService.findByEmail(user.getEmail())).thenReturn(user);
 
         mockMvc.perform(get("/api/users/test@example.com"))
                 .andExpect(status().isOk())
@@ -66,7 +62,8 @@ class UserControllerMvcTest {
 
     @Test
     void getUser_WhenUserDoesntExist_ReturnUserNotFound() throws Exception {
-        when(userService.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
+        when(userService.findByEmail("notfound@example.com"))
+                .thenThrow(new ResourceNotFoundException("User is not found."));
 
         mockMvc.perform(get("/api/users/notfound@example.com"))
                 .andExpect(status().isNotFound());
@@ -109,13 +106,9 @@ class UserControllerMvcTest {
 
     @Test
     void updateUser_WhenUserExists() throws Exception {
-        String email = "update@example.com";
-        UserUpdateRequestDto request = new UserUpdateRequestDto("12345678", "John", "Smith");
-        User existingUser = new User("update@example.com", "12345678", "Joe", "Duo");
-        existingUser.setFirstName(request.getFirstName());
-        existingUser.setLastName(request.getLastName());
-        existingUser.setPassword(request.getPassword());
-        when(userService.update(eq(email), any(UserUpdateRequestDto.class))).thenReturn(existingUser);
+        UserUpdateRequestDto request = new UserUpdateRequestDto("12345678", "John", "Smith", "USER");
+        User existingUser = new User("update@example.com", "12345678", "John", "Smith");
+        when(userService.update(anyString(), any(UserUpdateRequestDto.class))).thenReturn(existingUser);
 
         mockMvc.perform(put("/api/users/update@example.com")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -128,15 +121,15 @@ class UserControllerMvcTest {
 
     @Test
     void deleteUser_WhenUserExists() throws Exception {
-        when(userService.delete("delete@example.com")).thenReturn(true);
+        doNothing().when(userService).delete("delete@example.com");
 
         mockMvc.perform(delete("/api/users/delete@example.com"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void deleteUser_WhenUserNotExist() throws Exception {
-        when(userService.delete("notFound@example.com")).thenReturn(false);
+        doNothing().when(userService).delete("notFound@example.com");
 
         mockMvc.perform(delete("/api/users/notFound@example.com"))
                 .andExpect(status().isNotFound());

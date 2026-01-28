@@ -10,7 +10,10 @@ import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Page<Board> findByUserAndDeletedFalse(User user, Pageable pageable);
+    Page<Board> findByUserAndDeletedAtIsNull(User user, Pageable pageable);
 
-    Optional<Board> findByIdAndUserAndDeletedFalse(Long id, User user);
+    Optional<Board> findByIdAndUserAndDeletedAtIsNull(Long id, User user);
+
+    boolean existsByUserAndTitleAndDeletedAtIsNull(User user, String title);
+
 }

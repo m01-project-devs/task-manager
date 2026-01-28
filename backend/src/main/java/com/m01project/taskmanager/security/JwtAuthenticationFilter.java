@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                var user = userRepository.findByEmail(email).orElse(null);
+                var user = userRepository.findByEmailAndDeletedAtIsNull(email).orElse(null);
 
                 if (user != null && jwtService.isTokenValid(token, user)) {
                     var authToken = new UsernamePasswordAuthenticationToken(
@@ -80,6 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write("""
                     { "error": "Invalid or expired token" }
                     """);
+            return; // Stop filter chain - response already written
         }
         filterChain.doFilter(request, response);
     }

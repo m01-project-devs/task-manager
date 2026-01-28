@@ -1,9 +1,11 @@
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: task-manager-db
     restart: unless-stopped
     profiles: ["all", "db", "backend-db", "frontend-db"]
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}

@@ -12,7 +12,9 @@ import java.util.Optional;
 public interface UserService {
     User create(UserCreateRequestDto createRequestDto);
     User update(String email, UserUpdateRequestDto updateRequestDto);
-    Optional<User> findByEmail(String email);
+    User findByEmail(String email);
     Page<User> getUsers(Pageable pageable);
-    boolean delete(String email);
+    Page<User> getUsersOnly(Pageable pageable);
+    Page<User> getAdminsOnly(Pageable pageable);
+    void delete(String email);
 }

@@ -4,7 +4,6 @@ import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.UserCreateRequestDto;
 import com.m01project.taskmanager.dto.request.UserUpdateRequestDto;
 import com.m01project.taskmanager.dto.response.UserResponseDto;
-import com.m01project.taskmanager.exception.ResourceNotFoundException;
 import com.m01project.taskmanager.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -24,15 +23,24 @@ public class UserController {
 
     @GetMapping("/{email}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable @Valid @NotBlank String email) {
-        return userService.findByEmail(email)
-                .map(user -> new UserResponseDto(user.getEmail(), user.getFirstName(), user.getLastName(), user.getRole().toString()))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        User user = userService.findByEmail(email);
+        UserResponseDto response = new UserResponseDto(user.getEmail(), user.getFirstName(), user.getLastName(), user.getRole().toString());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
     public Page<User> getUsers(Pageable pageable) {
         return userService.getUsers(pageable);
+    }
+
+    @GetMapping("/users-only")
+    public Page<User> getUsersOnly(Pageable pageable) {
+        return userService.getUsersOnly(pageable);
+    }
+
+    @GetMapping("/admins-only")
+    public Page<User> getAdminsOnly(Pageable pageable) {
+        return userService.getAdminsOnly(pageable);
     }
 
     @PostMapping
@@ -53,10 +61,7 @@ public class UserController {
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable @Valid String email) {
-        boolean deleted = userService.delete(email);
-        if(deleted) {
-            return ResponseEntity.noContent().build();
-        }
+        userService.delete(email);
         return ResponseEntity.notFound().build();
     }
 

@@ -19,15 +19,16 @@ export default function ForgotPassword() {
       return;
     }
 
+    let passwordResetSuccessMsg = "Password reset link will be sent in few minutes.";
     try {
       setLoading(true);
       await forgotPassword(email);
       setSuccess(
-        "If an account exists with this email, a reset link has been sent."
+          passwordResetSuccessMsg
       );
     } catch {
       setSuccess(
-        "Password reset link will be sent in few minutes."
+        passwordResetSuccessMsg
       );
     } finally {
       setLoading(false);
