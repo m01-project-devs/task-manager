@@ -1,9 +1,9 @@
-package com.m01project.emailsender.infrastructure.config;
+package com.m01project.taskmanager.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties(EmailProperties.class)
-public class MailAutoConfig {
+@EnableConfigurationProperties(FrontendProperties.class)
+public class TaskManagerPropertiesConfig {
 }

@@ -222,7 +222,7 @@ Database migrations are handled automatically by Flyway on application startup. 
 
 If running with Docker Compose:
 ```bash
-docker-compose -f docker-compose.local.yml down
+docker-compose -f docker-compose.yml down
 ```
 
 ## ☁️ Deployment (CI/CD Overview)

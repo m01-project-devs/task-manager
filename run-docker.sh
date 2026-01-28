@@ -64,4 +64,4 @@ esac
 
 echo -e "${YELLOW}BuildKit enabled for faster builds${NC}\n"
 
-docker-compose -f docker-compose.local.yml --profile $PROFILE up -d
+docker-compose -f docker-compose.yml --profile $PROFILE up -d

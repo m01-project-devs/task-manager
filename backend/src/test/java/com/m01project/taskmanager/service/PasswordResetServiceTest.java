@@ -1,5 +1,7 @@
 package com.m01project.taskmanager.service;
 
+import com.m01project.emailsender.application.port.EmailMessage;
+import com.m01project.emailsender.application.port.EmailSender;
 import com.m01project.taskmanager.domain.PasswordResetToken;
 import com.m01project.taskmanager.domain.Role;
 import com.m01project.taskmanager.domain.User;
@@ -36,6 +38,12 @@ class PasswordResetServiceTest {
     @Mock
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
+    @Mock
+    private EmailSender emailSender;
+
+    @Mock
+    private PasswordResetEmailComposer emailComposer;
+
     @InjectMocks
     private PasswordResetService passwordResetService;
 
@@ -54,7 +62,10 @@ class PasswordResetServiceTest {
 
     @Test
     void forgotPassword_userExists_savesToken(){
-        when(userRepository.findByEmail("example@gmail.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull("example@gmail.com")).thenReturn(Optional.of(user));
+        EmailMessage emailMessage = mock(EmailMessage.class);
+        when(emailComposer.compose(eq("example@gmail.com"), any(UUID.class))).thenReturn(emailMessage);
+
         passwordResetService.forgotPassword("example@gmail.com");
         ArgumentCaptor<PasswordResetToken> captor = ArgumentCaptor.forClass(PasswordResetToken.class);
         verify(passwordResetTokenRepository, times(1)).save(captor.capture());
@@ -66,11 +77,12 @@ class PasswordResetServiceTest {
         assertNull(saved.getUsedAt());
 
         verifyNoMoreInteractions(passwordResetTokenRepository);
+        verify(emailSender, times(1)).send(emailMessage);
     }
 
     @Test
     void forgotPassword_userNotExists_doesNotSaveToken() {
-        when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndDeletedAtIsNull("missing@example.com")).thenReturn(Optional.empty());
 
         passwordResetService.forgotPassword("missing@example.com");
 
@@ -166,5 +178,26 @@ class PasswordResetServiceTest {
         verify(passwordEncoder, times(1)).encode("NewPass123!");
         verify(userRepository, times(1)).save(user);
         verify(passwordResetTokenRepository, times(1)).save(token);
+    }
+
+    @Test
+    void resetPassword_tokenUserMissing_throwsInvalidTokenException() {
+        UUID tokenValue = UUID.randomUUID();
+        PasswordResetToken token = PasswordResetToken.builder()
+                .token(tokenValue)
+                .user(null)
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
+                .usedAt(null)
+                .build();
+
+        when(passwordResetTokenRepository.findByToken(tokenValue)).thenReturn(Optional.of(token));
+
+        assertThrows(InvalidTokenException.class,
+                () -> passwordResetService.resetPassword(tokenValue.toString(), "NewPass123!"));
+
+        verify(passwordResetTokenRepository, times(1)).findByToken(tokenValue);
+        verifyNoInteractions(passwordEncoder);
+        verify(userRepository, never()).save(any());
+        verify(passwordResetTokenRepository, never()).save(any(PasswordResetToken.class));
     }
 }
