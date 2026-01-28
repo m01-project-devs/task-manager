@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
+
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -86,4 +88,9 @@ public class UserServiceImpl implements UserService {
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
     }
+    @Override
+    public List<User> search(String query) {
+        return userRepository.search(query);
+    }
+
 }
