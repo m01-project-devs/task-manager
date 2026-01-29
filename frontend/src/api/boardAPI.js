@@ -2,9 +2,11 @@ import api from "./axios";
 
 // --------- Board API ---------
 
-export async function getBoards() {
-  const res = await api.get("/boards");
-  return res.data.content;
+export async function getBoards(page, size) {
+  const res = await api.get("/boards", {
+    params: { page, size }
+  });
+  return res.data;
 }
 
 export async function createBoard(title) {
@@ -16,7 +18,7 @@ export async function deleteBoard(boardId) {
   await api.delete(`/boards/${boardId}`);
 }
 
-export async function updateBoard(boardId, name) {
-  const res = await api.put(`/boards/${boardId}`, { name });
+export async function updateBoard(boardId, title) {
+  const res = await api.put(`/boards/${boardId}`, { title });
   return res.data;
 }

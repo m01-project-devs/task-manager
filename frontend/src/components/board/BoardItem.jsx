@@ -6,8 +6,11 @@ import {
   Box,
   TextField,
 } from "@mui/material";
-import { Edit, Delete, Save, Close } from "@mui/icons-material";
+import { Edit, Delete, Save, Close, CalendarMonth } from "@mui/icons-material";
 import { useState } from "react";
+
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString("de-DE");
 
 export default function BoardItem({
   board,
@@ -21,21 +24,24 @@ export default function BoardItem({
   const [name, setName] = useState(board.name);
 
   const handleSave = () => {
-    if (!name.trim() || name === board.name) {
-      onCancelEdit();
-      return;
-    }
-    onSave(name.trim());
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === board.name) return onCancelEdit();
+    onSave(trimmed);
   };
 
   return (
-    <Card sx={{ mb: 2 }}>
+    <Card
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        transition: "0.2s",
+        "&:hover": { transform: "scale(1.02)", boxShadow: 6 },
+        borderLeft: "6px solid #2196f3",
+      }}
+    >
       <CardContent
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+        sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}
       >
         {isEditing ? (
           <Box sx={{ display: "flex", gap: 1, flexGrow: 1 }}>
@@ -47,48 +53,34 @@ export default function BoardItem({
               onBlur={handleSave}
               fullWidth
             />
-            <IconButton
-              color="primary"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={handleSave}
-            >
-              <Save />
+            <IconButton size="small" color="primary" onMouseDown={(e) => e.preventDefault()} onClick={handleSave}>
+              <Save fontSize="small" />
             </IconButton>
-            <IconButton
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={onCancelEdit}
-            >
-              <Close />
+            <IconButton size="small" onMouseDown={(e) => e.preventDefault()} onClick={onCancelEdit}>
+              <Close fontSize="small" />
             </IconButton>
           </Box>
         ) : (
           <>
-            <Typography
-              variant="h6"
-              sx={{ cursor: "pointer" }}
-              onClick={onClick}
-            >
-              {board.name}
-            </Typography>
-            <Box>
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(board);
-                }}
-              >
-                <Edit />
+            <Box sx={{ flexGrow: 1, cursor: "pointer" }} onClick={onClick}>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ wordBreak: "break-word" }}>
+                {board.name}
+              </Typography>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}>
+                <CalendarMonth sx={{ fontSize: 14, color: "text.secondary" }} />
+                <Typography variant="caption" color="text.secondary">
+                  {formatDate(board.createdAt)}
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ display: "flex", gap: 0.5 }}>
+              <IconButton size="small" onClick={(e) => { e.stopPropagation(); onEdit(board); }}>
+                <Edit fontSize="small" />
               </IconButton>
-              <IconButton
-                size="small"
-                color="error"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete();
-                }}
-              >
-                <Delete />
+              <IconButton size="small" color="error" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
+                <Delete fontSize="small" />
               </IconButton>
             </Box>
           </>
