@@ -44,7 +44,7 @@ public abstract class BaseIntegrationTest {
      */
     @Container
     static PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:15-alpine")
+            new PostgreSQLContainer<>("postgres:16-alpine")
                     .withDatabaseName("taskmanager_test")
                     .withUsername("postgres")
                     .withPassword("postgres");
