@@ -12,6 +12,38 @@ export async function getUsers() {
   }
 }
 
+export async function getUsersOnly({ page, size, sort } = {}) {
+  try {
+    const res = await api.get("/users/users-only", {
+      params: {
+        page,
+        size,
+        sort,
+      },
+    });
+    console.log(res);
+    return res.data;
+  } catch {
+    throw new Error("Failed to fetch users");
+  }
+}
+
+export async function getAdminsOnly({ page, size, sort } = {}) {
+  try {
+    const res = await api.get("/users/admins-only", {
+      params: {
+        page,
+        size,
+        sort,
+      },
+    });
+    console.log(res);
+    return res.data;
+  } catch {
+    throw new Error("Failed to fetch admins");
+  }
+}
+
 export async function createUser(payload) {
   try {
     await api.post("/users", payload);

@@ -20,19 +20,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -112,13 +106,9 @@ class UserControllerMvcTest {
 
     @Test
     void updateUser_WhenUserExists() throws Exception {
-        String email = "update@example.com";
-        UserUpdateRequestDto request = new UserUpdateRequestDto("12345678", "John", "Smith");
-        User existingUser = new User("update@example.com", "12345678", "Joe", "Duo");
-        existingUser.setFirstName(request.getFirstName());
-        existingUser.setLastName(request.getLastName());
-        existingUser.setPassword(request.getPassword());
-        when(userService.update(eq(email), any(UserUpdateRequestDto.class))).thenReturn(existingUser);
+        UserUpdateRequestDto request = new UserUpdateRequestDto("12345678", "John", "Smith", "USER");
+        User existingUser = new User("update@example.com", "12345678", "John", "Smith");
+        when(userService.update(anyString(), any(UserUpdateRequestDto.class))).thenReturn(existingUser);
 
         mockMvc.perform(put("/api/users/update@example.com")
                 .contentType(MediaType.APPLICATION_JSON)

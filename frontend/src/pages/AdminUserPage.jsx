@@ -14,13 +14,20 @@ import {
   AdminPanelSettings as AdminPanelSettingsIcon,
   Person as PersonIcon,
 } from "@mui/icons-material";
-import { getUsers, createUser } from "../api/userAPI";
+import { getUsersOnly, getAdminsOnly, createUser } from "../api/userAPI";
 import UserTable from "../components/user/userTable";
+import SectionDivider from "../components/common/SectionDivider";
 import { SnackbarProvider, useSnackbar } from "notistack";
 
 function AdminUserPageContent() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState({ content: [], totalElements: 0 });
+  const [admins, setAdmins] = useState({ content: [], totalElements: 0 });
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadingAdmins, setLoadingAdmins] = useState(true);
+  const [usersPage, setUsersPage] = useState(0);
+  const [adminsPage, setAdminsPage] = useState(0);
+  const [usersRowsPerPage, setUsersRowsPerPage] = useState(5);
+  const [adminsRowsPerPage, setAdminsRowsPerPage] = useState(5);
   const [newUser, setNewUser] = useState({
     email: "",
     firstName: "",
@@ -31,23 +38,47 @@ function AdminUserPageContent() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const loadUsers = async () => {
-    const data = await getUsers();
-    setUsers(data.content || []);
-    setLoading(false);
-  };
+  // Triggered when the component is mounted
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await getUsers();
-        setUsers(data.content || []);
-        console.log(data.totalPages);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    loadUsers();
+  }, [usersPage, usersRowsPerPage]);
+
+  useEffect(() => {
+    loadAdmins();
+  }, [adminsPage, adminsRowsPerPage]);
+
+  //Pre-ready functions to be used dynamically
+
+  const loadUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const data = await getUsersOnly({
+        page: usersPage,
+        size: usersRowsPerPage,
+      });
+      setUsers(data);
+    } catch (error) {
+      console.error("Users cannot be loaded:", error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const loadAdmins = async () => {
+    try {
+      setLoadingAdmins(true);
+      const data = await getAdminsOnly({
+        page: adminsPage,
+        size: adminsRowsPerPage,
+      });
+      setAdmins(data);
+    } catch (error) {
+      console.error("Admins cannot be loaded:", error);
+    } finally {
+      setLoadingAdmins(false);
+    }
+  };
 
   const handleCreate = async () => {
     await createUser(newUser);
@@ -59,14 +90,15 @@ function AdminUserPageContent() {
       password: "",
       role: "USER",
     });
+    setUsersPage(0);
     loadUsers();
   };
 
-  const total = users.length;
-  const admins = users.filter((u) => u.role === "ADMIN").length;
-  const regulars = users.filter((u) => u.role === "USER").length;
+  const total = (users.totalElements || 0) + (admins.totalElements || 0);
+  const adminUsers = admins.totalElements || 0;
+  const regulars = users.totalElements || 0;
 
-  if (loading) return <Typography>Loading...</Typography>;
+  if (loadingUsers || loadingAdmins) return <Typography>Loading...</Typography>;
 
   return (
     <Box sx={{ p: 4 }}>
@@ -78,7 +110,7 @@ function AdminUserPageContent() {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           { label: "Total Users", value: total, icon: <PeopleIcon /> },
-          { label: "Admins", value: admins, icon: <AdminPanelSettingsIcon /> },
+          { label: "Admins", value: adminUsers, icon: <AdminPanelSettingsIcon /> },
           { label: "User", value: regulars, icon: <PersonIcon /> },
         ].map(({ label, value, icon }) => (
           <Grid item xs={12} md={4} key={label}>
@@ -147,18 +179,36 @@ function AdminUserPageContent() {
           onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
         >
           <MenuItem value="USER">USER</MenuItem>
-          <MenuItem value="ADMIN">ADMIN</MenuItem>
+          {/*<MenuItem value="ADMIN">ADMIN</MenuItem>*/}
         </Select>
         <Button variant="contained" onClick={handleCreate}>
           Add
         </Button>
       </Paper>
 
-      {/* TABLE */}
+      <SectionDivider label="ADMINS" />
+
+      {/* ADMIN TABLE */}
+      <UserTable
+        users={admins}
+        reload={loadAdmins}
+        enqueueSnackbar={enqueueSnackbar}
+        page={adminsPage}
+        rowsPerPage={adminsRowsPerPage}
+        onPageChange={setAdminsPage}
+        onRowsPerPageChange={setAdminsRowsPerPage}
+      />
+      <SectionDivider label="USERS" />
+
+      {/* USER TABLE */}
       <UserTable
         users={users}
         reload={loadUsers}
         enqueueSnackbar={enqueueSnackbar}
+        page={usersPage}
+        rowsPerPage={usersRowsPerPage}
+        onPageChange={setUsersPage}
+        onRowsPerPageChange={setUsersRowsPerPage}
       />
     </Box>
   );
