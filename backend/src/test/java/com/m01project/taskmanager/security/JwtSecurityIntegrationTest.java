@@ -84,7 +84,7 @@ class JwtSecurityIntegrationTest extends BaseIntegrationTest {
         String loginPayload = """
                 {
                   "email": "test@example.com",
-                  "password": "password"
+                  "password": "Test1234@"
                 }
                 """;
 
