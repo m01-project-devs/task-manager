@@ -4,8 +4,8 @@ public final class PasswordConstraints
 {
     private PasswordConstraints(){};
 
-    public static final int MIN_LENGTH = 8;
-    public static final int MAX_LENGTH = 64;
+    public static final int MIN_LENGTH = 6;
+    public static final int MAX_LENGTH = 24;
 
     public static final String REGEX =
             "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{" +

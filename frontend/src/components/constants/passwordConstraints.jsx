@@ -3,8 +3,8 @@
  * SYNC with backend: PasswordConstraints.java
  */
 
-export const MIN_LENGTH = 8;
-export const MAX_LENGTH = 64;
+export const MIN_LENGTH = 6;
+export const MAX_LENGTH = 24;
 export const SPECIAL_CHARS = "@$!%*?&";
 
 export const REGEX = new RegExp(
