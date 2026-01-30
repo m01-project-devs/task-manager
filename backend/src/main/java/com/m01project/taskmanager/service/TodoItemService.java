@@ -26,7 +26,7 @@ public class TodoItemService {
     @Transactional
     public TodoItemResponse createTodoItem(TodoItemRequest request, Long boardId){
 
-        Board board = boardRepository.findById(boardId)
+        Board board = boardRepository.findByIdAndDeletedAtIsNull(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Board not found"));
 
         TodoItem todoItem = new TodoItem();
@@ -75,7 +75,7 @@ public class TodoItemService {
 
     public Page<TodoItemResponse> getBoardItems(Long boardId, int page, int size){
 
-        if (!boardRepository.existsById(boardId)) {
+        if (!boardRepository.existsByIdAndDeletedAtIsNull(boardId)) {
             throw new ResourceNotFoundException("Board not found");
         }
 

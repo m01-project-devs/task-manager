@@ -20,6 +20,5 @@ export async function resetPassword(token, newPassword) {
 }
 
 export function forgotPassword(email) {
-  return axios.post("/api/auth/forgot-password", { email });
+  return axios.post("/auth/forgot-password", { email });
 }
-
