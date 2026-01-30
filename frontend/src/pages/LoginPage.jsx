@@ -145,7 +145,7 @@ const LoginPage = () => {
           <Link
             component={RouterLink}
             to="/forgot-password"
-            sx={{ color: "#0b5ed7", fontWeight: 600 }}
+            sx={{ color: "#2196f3" }}
             underline="always"
           >
             Reset it
