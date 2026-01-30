@@ -6,11 +6,11 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TextField,
   TablePagination,
+  TextField,
   InputAdornment,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useState, useMemo } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 
 import UserRow from "./UserRow";
@@ -19,7 +19,6 @@ import { updateUser, deleteUser } from "../../api/userAPI";
 
 export default function UserTable({
   users = { content: [], totalElements: 0 },
-  reload,
   enqueueSnackbar,
   page,
   rowsPerPage,
@@ -28,28 +27,33 @@ export default function UserTable({
   showSearch = true,
 }) {
   const [search, setSearch] = useState("");
-
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(null);
 
-  const data = users?.content || [];
+  const [localUsers, setLocalUsers] = useState(() => [...users.content]);
 
   const filteredUsers = useMemo(() => {
-    if (!showSearch) return data;
-    return data.filter((u) =>
+    if (!showSearch) return localUsers;
+    return localUsers.filter((u) =>
       `${u.email} ${u.firstName} ${u.lastName} ${u.role}`
         .toLowerCase()
         .includes(search.toLowerCase())
     );
-  }, [data, search, showSearch]);
+  }, [localUsers, search, showSearch]);
 
   const handleUpdate = async (email, payload) => {
     try {
       await updateUser(email, payload);
       enqueueSnackbar("User updated", { variant: "info" });
-      reload();
-    } catch (err) {
-      console.error(err);
+
+      setLocalUsers(prev =>
+        prev.map(u =>
+          u.email === email
+            ? { ...u, firstName: payload.firstName, lastName: payload.lastName }
+            : u
+        )
+      );
+    } catch {
       enqueueSnackbar("Failed to update user", { variant: "error" });
     }
   };
@@ -62,13 +66,13 @@ export default function UserTable({
   const confirmDelete = async () => {
     try {
       await deleteUser(selectedEmail);
-      enqueueSnackbar("User deleted", { variant: "error" });
+      enqueueSnackbar("User deleted", { variant: "warning" });
+
+      setLocalUsers(prev => prev.filter(u => u.email !== selectedEmail));
       setConfirmOpen(false);
       setSelectedEmail(null);
-      reload();
-    } catch (err) {
-      console.error(err);
-      enqueueSnackbar("Failed to delete user", { variant: "error" });
+    } catch {
+      enqueueSnackbar("Failed to delete user", { variant: "warning" });
     }
   };
 
@@ -86,10 +90,7 @@ export default function UserTable({
                       size="small"
                       placeholder="Search by email, name or role…"
                       value={search}
-                      onChange={(e) => {
-                        setSearch(e.target.value);
-                        onPageChange(0);
-                      }}
+                      onChange={(e) => setSearch(e.target.value)}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -125,7 +126,7 @@ export default function UserTable({
         </TableContainer>
         <TablePagination
           component="div"
-          count={users?.totalElements || 0}
+          count={users.totalElements || 0}
           page={page}
           onPageChange={(_, newPage) => onPageChange(newPage)}
           rowsPerPage={rowsPerPage}

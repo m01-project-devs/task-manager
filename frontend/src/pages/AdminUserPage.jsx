@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  Grid,
-  Paper,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-} from "@mui/material";
+import { Box, Typography, Grid, Paper, TextField, Button } from "@mui/material";
 import {
   People as PeopleIcon,
   AdminPanelSettings as AdminPanelSettingsIcon,
   Person as PersonIcon,
+  Add,
 } from "@mui/icons-material";
 import { getUsersOnly, getAdminsOnly, createUser } from "../api/userAPI";
 import UserTable from "../components/user/UserTable";
@@ -37,17 +29,18 @@ function AdminUserPageContent() {
     firstName: "",
     lastName: "",
     password: "",
-    role: "USER",
   });
 
   const { enqueueSnackbar } = useSnackbar();
 
-  // USERS
   useEffect(() => {
     const fetchUsers = async () => {
       setLoadingUsers(true);
       try {
-        const data = await getUsersOnly({ page: usersPage, size: usersRowsPerPage });
+        const data = await getUsersOnly({
+          page: usersPage,
+          size: usersRowsPerPage,
+        });
         setUsers(data);
       } catch (err) {
         console.error(err);
@@ -59,12 +52,14 @@ function AdminUserPageContent() {
     fetchUsers();
   }, [usersPage, usersRowsPerPage, enqueueSnackbar]);
 
-  // ADMINS
   useEffect(() => {
     const fetchAdmins = async () => {
       setLoadingAdmins(true);
       try {
-        const data = await getAdminsOnly({ page: adminsPage, size: adminsRowsPerPage });
+        const data = await getAdminsOnly({
+          page: adminsPage,
+          size: adminsRowsPerPage,
+        });
         setAdmins(data);
       } catch (err) {
         console.error(err);
@@ -77,14 +72,22 @@ function AdminUserPageContent() {
   }, [adminsPage, adminsRowsPerPage, enqueueSnackbar]);
 
   const handleCreate = async () => {
-    if (!newUser.email || !newUser.firstName || !newUser.lastName || !newUser.password) return;
+    if (
+      !newUser.email ||
+      !newUser.firstName ||
+      !newUser.lastName ||
+      !newUser.password
+    )
+      return;
 
     try {
-      await createUser(newUser);
+      await createUser({
+        ...newUser,
+        role: "USER",
+      });
       enqueueSnackbar("User created", { variant: "success" });
-      setNewUser({ email: "", firstName: "", lastName: "", password: "", role: "USER" });
+      setNewUser({ email: "", firstName: "", lastName: "", password: "" });
       setUsersPage(0);
-      // reload users
       setLoadingUsers(true);
       const data = await getUsersOnly({ page: 0, size: usersRowsPerPage });
       setUsers(data);
@@ -108,11 +111,14 @@ function AdminUserPageContent() {
         User Management
       </Typography>
 
-      {/* STATS */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           { label: "Total Users", value: totalUsers, icon: <PeopleIcon /> },
-          { label: "Admins", value: adminUsers, icon: <AdminPanelSettingsIcon /> },
+          {
+            label: "Admins",
+            value: adminUsers,
+            icon: <AdminPanelSettingsIcon />,
+          },
           { label: "User", value: regularUsers, icon: <PersonIcon /> },
         ].map(({ label, value, icon }) => (
           <Grid item xs={12} md={4} key={label}>
@@ -125,13 +131,10 @@ function AdminUserPageContent() {
                 minWidth: 300,
               }}
             >
-              {/* LEFT */}
               <Box>
                 <Typography variant="subtitle2">{label}</Typography>
                 <Typography variant="h4">{value}</Typography>
               </Box>
-
-              {/* RIGHT ICON */}
               <Box
                 sx={{
                   width: 48,
@@ -151,28 +154,58 @@ function AdminUserPageContent() {
         ))}
       </Grid>
 
-      {/* CREATE USER */}
       <Paper sx={{ p: 2, mb: 3, display: "flex", gap: 1, flexWrap: "wrap" }}>
-        <TextField label="Email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} />
-        <TextField label="First Name" value={newUser.firstName} onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })} />
-        <TextField label="Last Name" value={newUser.lastName} onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })} />
-        <TextField label="Password" type="password" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} />
-        <Select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}>
-          <MenuItem value="USER">USER</MenuItem>
-        </Select>
-        <Button variant="contained" onClick={handleCreate}>
+        <TextField
+          label="Email"
+          value={newUser.email}
+          onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+        />
+        <TextField
+          label="First Name"
+          value={newUser.firstName}
+          onChange={(e) =>
+            setNewUser({ ...newUser, firstName: e.target.value })
+          }
+        />
+        <TextField
+          label="Last Name"
+          value={newUser.lastName}
+          onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })}
+        />
+        <TextField
+          label="Password"
+          type="password"
+          value={newUser.password}
+          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+        />
+        <Typography
+          variant="body1"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            px: 2,
+            height: 56, 
+            bgcolor: "grey.100",
+            borderRadius: 1,
+          }}
+        >
+          USER
+        </Typography>
+        <Button variant="contained" onClick={handleCreate} startIcon={<Add />}>
           Add
         </Button>
       </Paper>
 
-      {/* ADMINS TABLE */}
       <SectionDivider label="ADMINS" />
       <UserTable
         users={admins}
         reload={async () => {
           setLoadingAdmins(true);
           try {
-            const data = await getAdminsOnly({ page: adminsPage, size: adminsRowsPerPage });
+            const data = await getAdminsOnly({
+              page: adminsPage,
+              size: adminsRowsPerPage,
+            });
             setAdmins(data);
           } finally {
             setLoadingAdmins(false);
@@ -183,17 +216,19 @@ function AdminUserPageContent() {
         rowsPerPage={adminsRowsPerPage}
         onPageChange={setAdminsPage}
         onRowsPerPageChange={setAdminsRowsPerPage}
-        showSearch={false} 
+        showSearch={false}
       />
 
-      {/* USERS TABLE */}
       <SectionDivider label="USERS" />
       <UserTable
         users={users}
         reload={async () => {
           setLoadingUsers(true);
           try {
-            const data = await getUsersOnly({ page: usersPage, size: usersRowsPerPage });
+            const data = await getUsersOnly({
+              page: usersPage,
+              size: usersRowsPerPage,
+            });
             setUsers(data);
           } finally {
             setLoadingUsers(false);
@@ -204,7 +239,7 @@ function AdminUserPageContent() {
         rowsPerPage={usersRowsPerPage}
         onPageChange={setUsersPage}
         onRowsPerPageChange={setUsersRowsPerPage}
-        showSearch={true} 
+        showSearch={true}
       />
     </Box>
   );
@@ -212,7 +247,11 @@ function AdminUserPageContent() {
 
 export default function AdminUserPage() {
   return (
-    <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "top", horizontal: "right" }} autoHideDuration={3000}>
+    <SnackbarProvider
+      maxSnack={3}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      autoHideDuration={3000}
+    >
       <AdminUserPageContent />
     </SnackbarProvider>
   );
