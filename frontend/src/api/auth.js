@@ -14,7 +14,7 @@ export async function resetPassword(token, newPassword) {
     try {
       const data = await res.json();
       msg = data.message || data.error || msg;
-    } catch (_) {}
+    } catch (err) {console.log(err)}
     throw new Error(msg);
   }
 }
