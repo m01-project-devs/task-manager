@@ -7,6 +7,7 @@ import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.exception.BoardNotFoundException;
 import com.m01project.taskmanager.exception.DuplicateBoardTitleException;
 import com.m01project.taskmanager.repository.BoardRepository;
+import com.m01project.taskmanager.repository.TodoItemRepository;
 import com.m01project.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,11 +15,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final TodoItemRepository todoItemRepository;
 
     // ✅ CREATE BOARD
     @Transactional
@@ -51,6 +55,13 @@ public class BoardService {
         Board board = boardRepository
                 .findByIdAndUserAndDeletedAtIsNull(boardId, user)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
+
+        board.setDeletedAt(LocalDateTime.now());
+
+        // should also soft delete all related TodoItems related with this board too.
+        todoItemRepository.findByBoardAndDeletedAtIsNull(board).forEach(todoItem -> {
+            todoItem.setDeletedAt(LocalDateTime.now());
+        });
 
         boardRepository.save(board);
     }

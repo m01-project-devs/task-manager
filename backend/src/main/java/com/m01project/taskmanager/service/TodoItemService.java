@@ -65,7 +65,7 @@ public class TodoItemService {
 
 
         item.setDescription(request.getDescription());
-
+        item.setCompleted(request.isCompleted());
 
         TodoItem saved = todoItemRepository.save(item);
 

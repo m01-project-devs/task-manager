@@ -54,7 +54,7 @@ export async function createUser(payload) {
 
 export async function updateUser(email, payload) {
   try {
-    await api.put(`/users/${email}`, payload);
+    await api.patch(`/users/${email}`, payload);
   } catch {
     throw new Error("Failed to update user");
   }
