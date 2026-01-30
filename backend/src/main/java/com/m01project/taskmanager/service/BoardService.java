@@ -52,6 +52,7 @@ public class BoardService {
                 .findByIdAndUserAndDeletedAtIsNull(boardId, user)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
 
+        board.setDeletedAt(java.time.LocalDateTime.now());
         boardRepository.save(board);
     }
 
@@ -64,8 +65,9 @@ public class BoardService {
                 .findByIdAndUserAndDeletedAtIsNull(boardId, user)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
 
-        // Check duplicate title
-        if (boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, request.getTitle())) {
+        // Check duplicate title (ignore current board)
+        if (!board.getTitle().equals(request.getTitle())
+                && boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, request.getTitle())) {
             throw new DuplicateBoardTitleException(request.getTitle());
         }
 

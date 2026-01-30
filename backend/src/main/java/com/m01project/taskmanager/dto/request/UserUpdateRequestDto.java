@@ -1,5 +1,6 @@
 package com.m01project.taskmanager.dto.request;
 
+import jakarta.annotation.Nullable;
 import com.m01project.taskmanager.security.PasswordConstraints;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +19,7 @@ public class UserUpdateRequestDto {
         this(email, firstName, lastName, null);
     }
 
-    @NotBlank(message = "Password can not be null or blank")
+    @Nullable
     @Size(
             min = PasswordConstraints.MIN_LENGTH,
             max = PasswordConstraints.MAX_LENGTH,

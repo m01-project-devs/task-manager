@@ -187,11 +187,11 @@ class BoardServiceTest {
         board.setTitle("Old Title");
 
         BoardRequest request = new BoardRequest();
-        request.setTitle("Old Title");
+        request.setTitle("New Title");
 
         when(boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user))
                 .thenReturn(Optional.of(board));
-        when(boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, "Old Title"))
+        when(boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, "New Title"))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> boardService.updateBoard(boardId, request, user))
