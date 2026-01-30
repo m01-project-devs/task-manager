@@ -39,7 +39,7 @@ const RegisterPage = () => {
     });
 
     const [errors, setErrors] = useState({});
-    const [passwordsMatch, setPasswordsMatch] = useState(true); // ← ДОБАВИЛ состояние совпадения
+    const [passwordsMatch, setPasswordsMatch] = useState(true); // ← ADDED match state
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState("");
     const [success, setSuccess] = useState(false);
