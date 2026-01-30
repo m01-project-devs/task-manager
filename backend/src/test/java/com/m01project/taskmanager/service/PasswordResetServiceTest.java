@@ -10,6 +10,7 @@ import com.m01project.taskmanager.exception.TokenAlreadyUsedException;
 import com.m01project.taskmanager.exception.TokenExpiredException;
 import com.m01project.taskmanager.repository.PasswordResetTokenRepository;
 import com.m01project.taskmanager.repository.UserRepository;
+import com.m01project.taskmanager.service.impl.PasswordResetServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +46,7 @@ class PasswordResetServiceTest {
     private PasswordResetEmailComposer emailComposer;
 
     @InjectMocks
-    private PasswordResetService passwordResetService;
+    private PasswordResetServiceImpl passwordResetService;
 
     private User user;
 

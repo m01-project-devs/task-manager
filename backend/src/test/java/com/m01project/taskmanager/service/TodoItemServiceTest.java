@@ -7,6 +7,7 @@ import com.m01project.taskmanager.dto.response.TodoItemResponse;
 import com.m01project.taskmanager.exception.ResourceNotFoundException;
 import com.m01project.taskmanager.repository.BoardRepository;
 import com.m01project.taskmanager.repository.TodoItemRepository;
+import com.m01project.taskmanager.service.impl.TodoItemServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,7 +40,7 @@ class TodoItemServiceTest {
     private BoardRepository boardRepository;
 
     @InjectMocks
-    private TodoItemService todoItemService;
+    private TodoItemServiceImpl todoItemService;
 
     @Test
     void shouldReturnTodoItem_whenExists() {
