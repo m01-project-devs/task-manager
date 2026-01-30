@@ -18,34 +18,40 @@ import ConfirmDialog from "../common/ConfirmDialog";
 import { updateUser, deleteUser } from "../../api/userAPI";
 
 export default function UserTable({
-  users,
+  users = { content: [], totalElements: 0 },
   reload,
   enqueueSnackbar,
   page,
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  showSearch = true,
 }) {
   const [search, setSearch] = useState("");
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(null);
 
-  /* ---------- FILTER ---------- */
+  const data = users?.content || [];
+
   const filteredUsers = useMemo(() => {
-    let data = users.content || [];
+    if (!showSearch) return data;
     return data.filter((u) =>
       `${u.email} ${u.firstName} ${u.lastName} ${u.role}`
         .toLowerCase()
-        .includes(search.toLowerCase()),
+        .includes(search.toLowerCase())
     );
-  }, [users, search]);
+  }, [data, search, showSearch]);
 
-  /* ---------- ACTIONS ---------- */
   const handleUpdate = async (email, payload) => {
-    await updateUser(email, payload);
-    enqueueSnackbar("User updated", { variant: "info" });
-    reload();
+    try {
+      await updateUser(email, payload);
+      enqueueSnackbar("User updated", { variant: "info" });
+      reload();
+    } catch (err) {
+      console.error(err);
+      enqueueSnackbar("Failed to update user", { variant: "error" });
+    }
   };
 
   const askDelete = (email) => {
@@ -54,11 +60,16 @@ export default function UserTable({
   };
 
   const confirmDelete = async () => {
-    await deleteUser(selectedEmail);
-    enqueueSnackbar("User deleted", { variant: "error" });
-    setConfirmOpen(false);
-    setSelectedEmail(null);
-    reload();
+    try {
+      await deleteUser(selectedEmail);
+      enqueueSnackbar("User deleted", { variant: "error" });
+      setConfirmOpen(false);
+      setSelectedEmail(null);
+      reload();
+    } catch (err) {
+      console.error(err);
+      enqueueSnackbar("Failed to delete user", { variant: "error" });
+    }
   };
 
   return (
@@ -67,45 +78,43 @@ export default function UserTable({
         <TableContainer>
           <Table>
             <TableHead>
-              {/* SEARCH ROW */}
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    placeholder="Search by email, name or role…"
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      onPageChange(0);
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon fontSize="small" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-
-              {/* HEADER */}
+              {showSearch && (
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      placeholder="Search by email, name or role…"
+                      value={search}
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                        onPageChange(0);
+                      }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon fontSize="small" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
               <TableRow>
                 <TableCell>№</TableCell>
                 <TableCell>Email</TableCell>
-                <TableCell>First name</TableCell>
-                <TableCell>Last name</TableCell>
+                <TableCell>First Name</TableCell>
+                <TableCell>Last Name</TableCell>
                 <TableCell>Role</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
-
             <TableBody>
-              {filteredUsers.map((u, index) => (
+              {filteredUsers.map((u, idx) => (
                 <UserRow
                   key={u.email}
-                  index={page * rowsPerPage + index}
+                  index={page * rowsPerPage + idx}
                   user={u}
                   onUpdate={handleUpdate}
                   onAskDelete={askDelete}
@@ -114,11 +123,9 @@ export default function UserTable({
             </TableBody>
           </Table>
         </TableContainer>
-
-        {/* PAGINATION */}
         <TablePagination
           component="div"
-          count={users.totalElements || 0}
+          count={users?.totalElements || 0}
           page={page}
           onPageChange={(_, newPage) => onPageChange(newPage)}
           rowsPerPage={rowsPerPage}
@@ -130,7 +137,6 @@ export default function UserTable({
         />
       </Paper>
 
-      {/* CONFIRM DELETE */}
       <ConfirmDialog
         open={confirmOpen}
         title="Delete user"

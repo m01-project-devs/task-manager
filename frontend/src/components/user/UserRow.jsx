@@ -13,10 +13,10 @@ export default function UserRow({ user, index, onUpdate, onAskDelete }) {
   const currentEmail = localStorage.getItem("email");
   const [editing, setEditing] = useState(false);
   const [data, setData] = useState({
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    role: user.role,
+    email: user.email || "",
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
+    role: user.role || "USER",
   });
 
   const save = () => {
@@ -32,13 +32,11 @@ export default function UserRow({ user, index, onUpdate, onAskDelete }) {
   return (
     <TableRow>
       <TableCell>{index + 1}</TableCell>
-
       <TableCell>
         {editing ? (
           <TextField
             size="small"
             value={data.email}
-            onChange={(e) => setData({ ...data, email: e.target.value })}
           />
         ) : (
           user.email
@@ -55,7 +53,6 @@ export default function UserRow({ user, index, onUpdate, onAskDelete }) {
           user.firstName
         )}
       </TableCell>
-
       <TableCell>
         {editing ? (
           <TextField
@@ -67,7 +64,6 @@ export default function UserRow({ user, index, onUpdate, onAskDelete }) {
           user.lastName
         )}
       </TableCell>
-
       <TableCell>
         {editing ? (
           <Select
@@ -82,7 +78,6 @@ export default function UserRow({ user, index, onUpdate, onAskDelete }) {
           user.role
         )}
       </TableCell>
-
       <TableCell align="right">
         {editing ? (
           <>
