@@ -49,7 +49,7 @@ class UserControllerMvcTest {
 
     @Test
     void getUser_WhenUserExists() throws Exception {
-        User user = new User("test@example.com", "12345678", "Joe", "Duo");
+        User user = new User("test@example.com", "Test1234@", "Joe", "Duo");
 
         when(userService.findByEmail(user.getEmail())).thenReturn(user);
 
@@ -72,9 +72,9 @@ class UserControllerMvcTest {
     @Test
     void createUser_WhenValidRequest_ShouldReturnCreatedUser() throws Exception{
         UserCreateRequestDto request = new UserCreateRequestDto(
-                "test@example.com", "12345678", "Joe", "Duo");
+                "test@example.com", "Test1234@", "Joe", "Duo");
 
-        User savedUser = new User("test@example.com", "12345678", "Joe", "Duo");
+        User savedUser = new User("test@example.com", "Test1234@", "Joe", "Duo");
 
         when(userService.create(any(UserCreateRequestDto.class))).thenReturn(savedUser);
 
@@ -93,7 +93,7 @@ class UserControllerMvcTest {
         String json = """
                 {
                     "email": "wrongemail",
-                    "password": "12345678",
+                    "password": "Test1234@",
                     "firstName": "Joe",
                     "lastName": "Duo"
                 }
@@ -106,8 +106,8 @@ class UserControllerMvcTest {
 
     @Test
     void updateUser_WhenUserExists() throws Exception {
-        UserUpdateRequestDto request = new UserUpdateRequestDto("12345678", "John", "Smith", "USER");
-        User existingUser = new User("update@example.com", "12345678", "John", "Smith");
+        UserUpdateRequestDto request = new UserUpdateRequestDto("Test1234@", "John", "Smith", "USER");
+        User existingUser = new User("update@example.com", "Test1234@", "John", "Smith");
         when(userService.update(anyString(), any(UserUpdateRequestDto.class))).thenReturn(existingUser);
 
         mockMvc.perform(put("/api/users/update@example.com")
@@ -138,8 +138,8 @@ class UserControllerMvcTest {
     @Test
     void getUsers_ReturnsPagedUsers() throws Exception {
         // Mock user list
-        User user1 = new User("user1@test.com", "12345678", "John", "Doe");
-        User user2 = new User("user2@test.com", "12345678", "Alice", "Smith");
+        User user1 = new User("user1@test.com", "Test1234@", "John", "Doe");
+        User user2 = new User("user2@test.com", "Test1234@", "Alice", "Smith");
 
         List<User> users = List.of(user1, user2);
 
