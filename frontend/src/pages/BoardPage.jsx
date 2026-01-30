@@ -21,40 +21,40 @@ import { SnackbarProvider, useSnackbar } from "notistack";
 
 function BoardPageContent() {
   const [boards, setBoards] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
   const [newBoard, setNewBoard] = useState("");
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
 
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const loadBoards = async () => {
-    const data = await getBoards();
-    setBoards(data || []);
+  const loadBoards = async (pageNumber, pageSize) => {
+    try {
+      const data = await getBoards(pageNumber, pageSize);
+      setBoards(data.content || []);
+      setTotalElements(data.totalElements || 0);
+    } catch {
+      enqueueSnackbar("Failed to load boards", { variant: "error" });
+    }
   };
 
   useEffect(() => {
     const fetchBoards = async () => {
-      await loadBoards();
+      await loadBoards(page, rowsPerPage);
     };
     fetchBoards();
-  }, []);
+  }, [page, rowsPerPage]);
 
-  const filteredBoards = useMemo(() => {
-    return boards.filter((b) =>
-      b.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [boards, search]);
-
-  const paginatedBoards = useMemo(() => {
-    const start = page * rowsPerPage;
-    const end = start + rowsPerPage;
-    return filteredBoards.slice(start, end);
-  }, [filteredBoards, page, rowsPerPage]);
+  const filteredBoards = useMemo(
+    () =>
+      boards.filter((b) => b.name.toLowerCase().includes(search.toLowerCase())),
+    [boards, search],
+  );
 
   const handleAdd = async () => {
     if (!newBoard.trim()) return;
@@ -62,7 +62,8 @@ function BoardPageContent() {
       await createBoard(newBoard.trim());
       enqueueSnackbar("Board added", { variant: "success" });
       setNewBoard("");
-      loadBoards();
+      setPage(0);
+      loadBoards(0, rowsPerPage);
     } catch {
       enqueueSnackbar("Failed to add board", { variant: "error" });
     }
@@ -74,23 +75,24 @@ function BoardPageContent() {
   };
 
   const confirmDelete = async () => {
+    if (!selectedBoard) return;
     try {
       await deleteBoard(selectedBoard.id);
       enqueueSnackbar("Board deleted", { variant: "error" });
       setConfirmOpen(false);
       setSelectedBoard(null);
-      loadBoards();
+      loadBoards(page, rowsPerPage);
     } catch {
       enqueueSnackbar("Failed to delete board", { variant: "error" });
     }
   };
 
-  const handleSave = async (boardId, newName) => {
-    if (!newName.trim()) return;
+  const handleSave = async (boardId, newTitle) => {
+    if (!newTitle.trim()) return;
     try {
-      await updateBoard(boardId, newName);
+      await updateBoard(boardId, newTitle);
       enqueueSnackbar("Board updated", { variant: "info" });
-      loadBoards();
+      loadBoards(page, rowsPerPage);
     } catch {
       enqueueSnackbar("Failed to update board", { variant: "error" });
     }
@@ -102,15 +104,20 @@ function BoardPageContent() {
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "stretch", sm: "center" },
           mb: 2,
+          gap: 1,
         }}
       >
         <Typography variant="h4">My Boards</Typography>
-        <Paper sx={{ display: "flex", p: 1, minWidth: 400 }}>
+
+        <Paper
+          sx={{ display: "flex", p: 1, width: { xs: "100%", sm: "auto" } }}
+        >
           <TextField
-            sx={{ minWidth: 400 }}
+            sx={{ width: { xs: "100%", sm: 400 } }}
             placeholder="Search boards…"
             value={search}
             onChange={(e) => {
@@ -142,7 +149,7 @@ function BoardPageContent() {
       </Paper>
 
       {/* Boards list */}
-      {paginatedBoards.length === 0 ? (
+      {filteredBoards.length === 0 ? (
         <Box sx={{ textAlign: "center", py: 10 }}>
           <Folder sx={{ fontSize: 80, color: "text.secondary", mb: 1 }} />
           <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -154,17 +161,17 @@ function BoardPageContent() {
         </Box>
       ) : (
         <BoardList
-          boards={paginatedBoards}
+          boards={filteredBoards}
           onDelete={askDelete}
           onSave={handleSave}
         />
       )}
 
       {/* Pagination */}
-      {filteredBoards.length > rowsPerPage && (
+      {totalElements > rowsPerPage && (
         <TablePagination
           component="div"
-          count={filteredBoards.length}
+          count={totalElements}
           page={page}
           onPageChange={(_, newPage) => setPage(newPage)}
           rowsPerPage={rowsPerPage}
@@ -172,10 +179,11 @@ function BoardPageContent() {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
           }}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[20, 30, 40]}
         />
       )}
 
+      {/* Confirm Delete Dialog */}
       <ConfirmDialog
         open={confirmOpen}
         title="Delete Board"

@@ -9,6 +9,9 @@ import com.m01project.taskmanager.exception.DuplicateBoardTitleException;
 import com.m01project.taskmanager.repository.BoardRepository;
 import com.m01project.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
