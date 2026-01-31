@@ -18,16 +18,20 @@ import { getUsersOnly, getAdminsOnly, createUser } from "../api/userAPI";
 import UserTable from "../components/user/userTable";
 import SectionDivider from "../components/common/SectionDivider";
 import { SnackbarProvider, useSnackbar } from "notistack";
+import { useSortableTable } from "../hooks/useSortableTable.js"
 
 function AdminUserPageContent() {
-  const [users, setUsers] = useState({ content: [], totalElements: 0 });
-  const [admins, setAdmins] = useState({ content: [], totalElements: 0 });
-  const [loadingUsers, setLoadingUsers] = useState(true);
-  const [loadingAdmins, setLoadingAdmins] = useState(true);
-  const [usersPage, setUsersPage] = useState(0);
-  const [adminsPage, setAdminsPage] = useState(0);
-  const [usersRowsPerPage, setUsersRowsPerPage] = useState(5);
-  const [adminsRowsPerPage, setAdminsRowsPerPage] = useState(5);
+    const [users, setUsers] = useState({ content: [], totalElements: 0 });
+    const [admins, setAdmins] = useState({ content: [], totalElements: 0 });
+    const [loadingUsers, setLoadingUsers] = useState(true);
+    const [loadingAdmins, setLoadingAdmins] = useState(true);
+
+    const [usersSearch, setUsersSearch] = useState("");
+    const [adminsSearch, setAdminsSearch] = useState("");
+
+
+
+
   const [newUser, setNewUser] = useState({
     email: "",
     firstName: "",
@@ -38,28 +42,42 @@ function AdminUserPageContent() {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const adminsTable = useSortableTable(5);
+  const usersTable = useSortableTable(5);
+
   // Triggered when the component is mounted
 
-  useEffect(() => {
-    loadUsers();
-  }, [usersPage, usersRowsPerPage]);
+    useEffect(() => {
+        loadUsers();
+    }, [
+        usersTable.page,
+        usersTable.rowsPerPage,
+        usersTable.sort,
+        usersSearch
+    ]);
 
-  useEffect(() => {
-    loadAdmins();
-  }, [adminsPage, adminsRowsPerPage]);
-
+    useEffect(() => {
+        loadAdmins();
+    }, [
+        adminsTable.page,
+        adminsTable.rowsPerPage,
+        adminsTable.sort,
+        adminsSearch
+    ]);
   //Pre-ready functions to be used dynamically
 
   const loadUsers = async () => {
     try {
       setLoadingUsers(true);
       const data = await getUsersOnly({
-        page: usersPage,
-        size: usersRowsPerPage,
+        page: usersTable.page,
+        size: usersTable.rowsPerPage,
+        sort: usersTable.sort,
       });
       setUsers(data);
     } catch (error) {
       console.error("Users cannot be loaded:", error);
+      enqueueSnackbar("Failed to load users", {variant: "error"});
     } finally {
       setLoadingUsers(false);
     }
@@ -69,29 +87,35 @@ function AdminUserPageContent() {
     try {
       setLoadingAdmins(true);
       const data = await getAdminsOnly({
-        page: adminsPage,
-        size: adminsRowsPerPage,
+        page: adminsTable.page,
+        size: adminsTable.rowsPerPage,
+        sort: adminsTable.sort,
       });
       setAdmins(data);
     } catch (error) {
       console.error("Admins cannot be loaded:", error);
+      enqueueSnackbar("Failed to load admins", {variant: "error"});
     } finally {
       setLoadingAdmins(false);
     }
   };
 
   const handleCreate = async () => {
-    await createUser(newUser);
-    enqueueSnackbar("User created", { variant: "success" });
-    setNewUser({
-      email: "",
-      firstName: "",
-      lastName: "",
-      password: "",
-      role: "USER",
-    });
-    setUsersPage(0);
-    loadUsers();
+      try{
+          await createUser(newUser);
+          enqueueSnackbar("User created", { variant: "success" });
+          setNewUser({
+              email: "",
+              firstName: "",
+              lastName: "",
+              password: "",
+              role: "USER",
+          });
+          usersTable.handleChangePage(0);
+          loadUsers();
+      }catch (err){
+          enqueueSnackbar("Error creating user", {variant: "error"});
+      }
   };
 
   const total = (users.totalElements || 0) + (admins.totalElements || 0);
@@ -193,10 +217,14 @@ function AdminUserPageContent() {
         users={admins}
         reload={loadAdmins}
         enqueueSnackbar={enqueueSnackbar}
-        page={adminsPage}
-        rowsPerPage={adminsRowsPerPage}
-        onPageChange={setAdminsPage}
-        onRowsPerPageChange={setAdminsRowsPerPage}
+        page={adminsTable.page}
+        rowsPerPage={adminsTable.rowsPerPage}
+        onPageChange={adminsTable.handleChangePage}
+        onRowsPerPageChange={adminsTable.handleChangeRowsPerPage}
+        sortConfig={adminsTable.sortConfig}
+        onSort={adminsTable.handleSort}
+        searchValue={adminsSearch}
+        onSearchChange={setAdminsSearch}
       />
       <SectionDivider label="USERS" />
 
@@ -205,10 +233,14 @@ function AdminUserPageContent() {
         users={users}
         reload={loadUsers}
         enqueueSnackbar={enqueueSnackbar}
-        page={usersPage}
-        rowsPerPage={usersRowsPerPage}
-        onPageChange={setUsersPage}
-        onRowsPerPageChange={setUsersRowsPerPage}
+        page={usersTable.page}
+        rowsPerPage={usersTable.rowsPerPage}
+        onPageChange={usersTable.handleChangePage}
+        onRowsPerPageChange={usersTable.handleChangeRowsPerPage}
+        sortConfig={usersTable.sortConfig}
+        onSort={usersTable.handleSort}
+        searchValue={usersSearch}
+        onSearchChange={setUsersSearch}
       />
     </Box>
   );

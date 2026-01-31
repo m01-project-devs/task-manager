@@ -54,16 +54,16 @@ export async function createUser(payload) {
 
 export async function updateUser(email, payload) {
   try {
-    await api.put(`/users/${email}`, payload);
+      await api.put(`/users/${encodeURIComponent(email)}`, payload);
   } catch {
-    throw new Error("Failed to update user");
+      throw new Error("Failed to update user");
   }
 }
 
 export async function deleteUser(email) {
   try {
-    await api.delete(`/users/${email}`);
+      await api.delete(`/users/${encodeURIComponent(email)}`);
   } catch {
-    throw new Error("Failed to delete user");
+      throw new Error("Failed to delete user");
   }
 }

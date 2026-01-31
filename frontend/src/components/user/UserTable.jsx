@@ -16,6 +16,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import UserRow from "./UserRow";
 import ConfirmDialog from "../common/ConfirmDialog";
 import { updateUser, deleteUser } from "../../api/userAPI";
+import SortableTableHead from "../common/SortableTableHead.jsx";
 
 export default function UserTable({
   users,
@@ -25,27 +26,36 @@ export default function UserTable({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  sortConfig,
+  onSort,
+  searchValue = "",
+  onSearchChange,
 }) {
-  const [search, setSearch] = useState("");
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(null);
 
-  /* ---------- FILTER ---------- */
-  const filteredUsers = useMemo(() => {
-    let data = users.content || [];
-    return data.filter((u) =>
-      `${u.email} ${u.firstName} ${u.lastName} ${u.role}`
-        .toLowerCase()
-        .includes(search.toLowerCase()),
-    );
-  }, [users, search]);
+
+    /* ---------- COLUMNS CONFIG ---------- */
+    const columns = [
+        { field: 'index', label: '№', sortable: false },
+        { field: 'email', label: 'Email', sortable: true },
+        { field: 'firstName', label: 'First name', sortable: true },
+        { field: 'lastName', label: 'Last name', sortable: true },
+        { field: 'role', label: 'Role', sortable: true },
+        { field: 'actions', label: 'Actions', sortable: false, align: 'right' },
+    ];
 
   /* ---------- ACTIONS ---------- */
   const handleUpdate = async (email, payload) => {
-    await updateUser(email, payload);
-    enqueueSnackbar("User updated", { variant: "info" });
-    reload();
+      try {
+          await updateUser(email, payload);
+          enqueueSnackbar("User updated", {variant: "info"});
+          reload();
+      }catch(error) {
+          console.error(error);
+          enqueueSnackbar("Failed to update user", { variant: "error" });
+      }
   };
 
   const askDelete = (email) => {
@@ -54,11 +64,20 @@ export default function UserTable({
   };
 
   const confirmDelete = async () => {
-    await deleteUser(selectedEmail);
-    enqueueSnackbar("User deleted", { variant: "error" });
-    setConfirmOpen(false);
-    setSelectedEmail(null);
-    reload();
+      try{
+        await deleteUser(selectedEmail);
+          enqueueSnackbar("User deleted", { variant: "success" });
+          setConfirmOpen(false);
+        setSelectedEmail(null);
+        reload();
+      }catch (err) {
+          console.error(err);
+          enqueueSnackbar("Failed to delete user", { variant: "error" });
+      } finally {
+          setConfirmOpen(false);
+          setSelectedEmail(null);
+          reload();
+      }
   };
 
   return (
@@ -74,9 +93,9 @@ export default function UserTable({
                     fullWidth
                     size="small"
                     placeholder="Search by email, name or role…"
-                    value={search}
+                    value={searchValue}
                     onChange={(e) => {
-                      setSearch(e.target.value);
+                      onSearchChange(e.target.value);
                       onPageChange(0);
                     }}
                     InputProps={{
@@ -90,28 +109,25 @@ export default function UserTable({
                 </TableCell>
               </TableRow>
 
-              {/* HEADER */}
-              <TableRow>
-                <TableCell>№</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>First name</TableCell>
-                <TableCell>Last name</TableCell>
-                <TableCell>Role</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
+                {/* SORTABLE HEADER */}
+                <SortableTableHead
+                    columns={columns}
+                    sortConfig={sortConfig}
+                    onSort={onSort}
+                />
             </TableHead>
 
-            <TableBody>
-              {filteredUsers.map((u, index) => (
-                <UserRow
-                  key={u.email}
-                  index={page * rowsPerPage + index}
-                  user={u}
-                  onUpdate={handleUpdate}
-                  onAskDelete={askDelete}
-                />
-              ))}
-            </TableBody>
+              <TableBody>
+                  {(users.content || []).map((u, index) => (
+                      <UserRow
+                          key={u.email}
+                          index={page * rowsPerPage + index}
+                          user={u}
+                          onUpdate={handleUpdate}
+                          onAskDelete={askDelete}
+                      />
+                  ))}
+              </TableBody>
           </Table>
         </TableContainer>
 
