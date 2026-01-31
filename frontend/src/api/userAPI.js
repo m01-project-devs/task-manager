@@ -2,12 +2,14 @@ import api from "./axios";
 
 // --------- User API ---------
 
-export async function getUsers() {
+export async function searchUsers({ query, page, size, sort } = {}) {
   try {
-    const res = await api.get("/users");
+    const res = await api.get("/users/search", {
+      params: { query, page, size, sort },
+    });
     return res.data;
   } catch (error) {
-    console.error("GET USERS ERROR:", error.response?.data);
+    console.error("SEARCH USERS ERROR:", error.response?.data);
     throw error;
   }
 }

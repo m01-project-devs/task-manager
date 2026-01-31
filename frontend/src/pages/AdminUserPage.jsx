@@ -6,7 +6,7 @@ import {
   Person as PersonIcon,
   Add,
 } from "@mui/icons-material";
-import { getUsersOnly, getAdminsOnly, createUser } from "../api/userAPI";
+import { getUsersOnly, getAdminsOnly, createUser, searchUsers } from "../api/userAPI";
 import UserTable from "../components/user/UserTable";
 import SectionDivider from "../components/common/SectionDivider";
 import { SnackbarProvider, useSnackbar } from "notistack";
@@ -15,14 +15,9 @@ import { useSortableTable } from "../hooks/useSortableTable.js"
 function AdminUserPageContent() {
   const [users, setUsers] = useState({ content: [], totalElements: 0 });
   const [admins, setAdmins] = useState({ content: [], totalElements: 0 });
-  const [usersPage, setUsersPage] = useState(0);
-  const [adminsPage, setAdminsPage] = useState(0);
-  const [usersRowsPerPage, setUsersRowsPerPage] = useState(5);
-  const [adminsRowsPerPage, setAdminsRowsPerPage] = useState(5);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingAdmins, setLoadingAdmins] = useState(false);
-  const [usersSearch, setUsersSearch] = useState("");
-  const [adminsSearch, setAdminsSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [newUser, setNewUser] = useState({
     email: "",
@@ -33,18 +28,25 @@ function AdminUserPageContent() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-    const adminsTable = useSortableTable(5);
-    const usersTable = useSortableTable(5);
+  const adminsTable = useSortableTable(5);
+  const usersTable = useSortableTable(5);
 
   useEffect(() => {
     const fetchUsers = async () => {
       setLoadingUsers(true);
       try {
-        const data = await getUsersOnly({
-            page: usersTable.page,
-            size: usersTable.rowsPerPage,
-            sort: usersTable.sort,
-        });
+        const data = searchQuery.trim()
+          ? await searchUsers({
+              query: searchQuery,
+              page: usersTable.page,
+              size: usersTable.rowsPerPage,
+              sort: usersTable.sort,
+            })
+          : await getUsersOnly({
+              page: usersTable.page,
+              size: usersTable.rowsPerPage,
+              sort: usersTable.sort,
+            });
         setUsers(data);
       } catch (error) {
         console.error("Users cannot be loaded:", error);
@@ -58,7 +60,7 @@ function AdminUserPageContent() {
       usersTable.page,
       usersTable.rowsPerPage,
       usersTable.sort,
-      usersSearch,
+      searchQuery,
       enqueueSnackbar]);
 
   useEffect(() => {
@@ -83,7 +85,6 @@ function AdminUserPageContent() {
       adminsTable.page,
       adminsTable.rowsPerPage,
       adminsTable.sort,
-      adminsSearch,
       enqueueSnackbar,
   ]);
 
@@ -103,9 +104,13 @@ function AdminUserPageContent() {
       });
       enqueueSnackbar("User created", { variant: "success" });
       setNewUser({ email: "", firstName: "", lastName: "", password: "" });
-      setUsersPage(0);
+      usersTable.handleChangePage(0);
       setLoadingUsers(true);
-      const data = await getUsersOnly({ page: 0, size: usersRowsPerPage });
+      const data = await getUsersOnly({
+        page: 0,
+        size: usersTable.rowsPerPage,
+        sort: usersTable.sort,
+      });
       setUsers(data);
     } catch (err) {
       console.error(err);
@@ -113,6 +118,11 @@ function AdminUserPageContent() {
     } finally {
       setLoadingUsers(false);
     }
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    usersTable.handleChangePage(0);
   };
 
   const totalUsers = (users.totalElements || 0) + (admins.totalElements || 0);
@@ -231,8 +241,8 @@ function AdminUserPageContent() {
         enqueueSnackbar={enqueueSnackbar}
         page={adminsTable.page}
         rowsPerPage={adminsTable.rowsPerPage}
-        onPageChange={setAdminsPage}
-        onRowsPerPageChange={setAdminsRowsPerPage}
+        onPageChange={adminsTable.handleChangePage}
+        onRowsPerPageChange={adminsTable.handleChangeRowsPerPage}
         sortConfig={adminsTable.sortConfig}
         onSort={adminsTable.handleSort}
         showSearch={false}
@@ -244,11 +254,18 @@ function AdminUserPageContent() {
         reload={async () => {
           setLoadingUsers(true);
           try {
-            const data = await getUsersOnly({
-              page: usersTable.page,
-              size: usersTable.rowsPerPage,
-              sort: adminsTable.sort,
-            });
+            const data = searchQuery.trim()
+              ? await searchUsers({
+                  query: searchQuery,
+                  page: usersTable.page,
+                  size: usersTable.rowsPerPage,
+                  sort: usersTable.sort,
+                })
+              : await getUsersOnly({
+                  page: usersTable.page,
+                  size: usersTable.rowsPerPage,
+                  sort: usersTable.sort,
+                });
             setUsers(data);
           } finally {
             setLoadingUsers(false);
@@ -257,11 +274,13 @@ function AdminUserPageContent() {
         enqueueSnackbar={enqueueSnackbar}
         page={usersTable.page}
         rowsPerPage={usersTable.rowsPerPage}
-        onPageChange={setUsersPage}
-        onRowsPerPageChange={setUsersRowsPerPage}
+        onPageChange={usersTable.handleChangePage}
+        onRowsPerPageChange={usersTable.handleChangeRowsPerPage}
         sortConfig={usersTable.sortConfig}
         onSort={usersTable.handleSort}
         showSearch={true}
+        searchQuery={searchQuery}
+        onSearch={handleSearch}
       />
     </Box>
   );

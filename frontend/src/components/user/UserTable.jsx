@@ -9,9 +9,13 @@ import {
   TablePagination,
   TextField,
   InputAdornment,
+  Chip,
+  Box,
 } from "@mui/material";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import ClearIcon from "@mui/icons-material/Clear";
 
 import UserRow from "./UserRow";
 import ConfirmDialog from "../common/ConfirmDialog";
@@ -20,6 +24,7 @@ import SortableTableHead from "../common/SortableTableHead.jsx";
 
 export default function UserTable({
   users = { content: [], totalElements: 0 },
+  reload,
   enqueueSnackbar,
   page,
   rowsPerPage,
@@ -27,9 +32,9 @@ export default function UserTable({
   onRowsPerPageChange,
   sortConfig,
   onSort,
-  searchValue = "",
-  onSearchChange,
   showSearch = true,
+  searchQuery = "",
+  onSearch,
 }) {
   const [search, setSearch] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -37,8 +42,15 @@ export default function UserTable({
 
   const [localUsers, setLocalUsers] = useState(() => [...users.content]);
 
+  useEffect(() => {
+    setLocalUsers([...users.content]);
+  }, [users]);
 
-    const columns = [
+  useEffect(() => {
+    setSearch(searchQuery);
+  }, [searchQuery]);
+
+  const columns = [
         { field: 'index', label: '№', sortable: false },
         { field: 'email', label: 'Email', sortable: true },
         { field: 'firstName', label: 'First name', sortable: true },
@@ -47,14 +59,26 @@ export default function UserTable({
         { field: 'actions', label: 'Actions', sortable: false, align: 'right' },
     ];
 
-  const filteredUsers = useMemo(() => {
-    if (!showSearch) return localUsers;
-    return localUsers.filter((u) =>
-      `${u.email} ${u.firstName} ${u.lastName} ${u.role}`
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    );
-  }, [localUsers, search, showSearch]);
+  const handleSearch = () => {
+    const trimmedSearch = search.trim();
+    if (onSearch) {
+      onSearch(trimmedSearch);
+    }
+  };
+
+  const handleClearFilter = () => {
+    setSearch("");
+    if (onSearch) {
+      onSearch("");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
 
   const handleUpdate = async (email, payload) => {
     try {
@@ -99,6 +123,29 @@ export default function UserTable({
   return (
     <>
       <Paper>
+        {searchQuery && (
+          <Box
+            sx={{
+              p: 2,
+              borderBottom: "1px solid",
+              borderColor: "divider",
+              bgcolor: "primary.50",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            <FilterAltIcon color="primary" fontSize="small" />
+            <Chip
+              label={`Filtering by: "${searchQuery}"`}
+              color="primary"
+              variant="outlined"
+              onDelete={handleClearFilter}
+              deleteIcon={<ClearIcon />}
+              size="small"
+            />
+          </Box>
+        )}
         <TableContainer>
           <Table>
             <TableHead>
@@ -108,9 +155,10 @@ export default function UserTable({
                     <TextField
                       fullWidth
                       size="small"
-                      placeholder="Search by email, name or role…"
+                      placeholder="Search by email, name or role… (Press Enter to search)"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
+                      onKeyDown={handleKeyPress}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -129,7 +177,7 @@ export default function UserTable({
                 />
             </TableHead>
             <TableBody>
-              {filteredUsers.map((u, idx) => (
+              {localUsers.map((u, idx) => (
                 <UserRow
                   key={u.email}
                   index={page * rowsPerPage + idx}
