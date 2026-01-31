@@ -2,12 +2,14 @@ import api from "./axios";
 
 // --------- User API ---------
 
-export async function getUsers() {
+export async function searchUsers({ query, page, size, sort } = {}) {
   try {
-    const res = await api.get("/users");
+    const res = await api.get("/users/search", {
+      params: { query, page, size, sort },
+    });
     return res.data;
   } catch (error) {
-    console.error("GET USERS ERROR:", error.response?.data);
+    console.error("SEARCH USERS ERROR:", error.response?.data);
     throw error;
   }
 }
@@ -48,7 +50,7 @@ export async function createUser(payload) {
 
 export async function updateUser(email, payload) {
   try {
-    const res = await api.put(`/users/${email}`, payload);
+    const res = await api.put(`/users/${encodeURIComponent(email)}`, payload);
     return res.data;
   } catch (error) {
     console.error("UPDATE USER ERROR:", error.response?.data);
@@ -58,7 +60,7 @@ export async function updateUser(email, payload) {
 
 export async function deleteUser(email) {
   try {
-    const res = await api.delete(`/users/${email}`);
+    const res = await api.delete(`/users/${encodeURIComponent(email)}`);
     return res.data;
   } catch (error) {
     console.error("DELETE USER ERROR:", error.response?.data);
