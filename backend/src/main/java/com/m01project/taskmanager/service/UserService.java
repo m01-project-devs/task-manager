@@ -17,6 +17,6 @@ public interface UserService {
     Page<User> getUsersOnly(Pageable pageable);
     Page<User> getAdminsOnly(Pageable pageable);
     void delete(String email);
-    List<User> search(String query);
+    Page<User> search(String query, Pageable pageable);
 
 }

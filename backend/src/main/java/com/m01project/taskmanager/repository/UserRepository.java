@@ -29,6 +29,6 @@ WHERE u.deletedAt IS NULL AND
    OR LOWER(u.email) LIKE LOWER(CONCAT('%', :q, '%'))
 )
 """)
-    List<User> search(@Param("q") String q);
+    Page<User> search(@Param("q") String q, Pageable pageable);
 
 }

@@ -23,8 +23,9 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/search")
-    public List<User> searchUsers(@RequestParam String query) {
-        return userService.search(query);
+    public Page<User> searchUsers(@RequestParam String query, Pageable pageable) {
+
+        return userService.search(query, pageable);
     }
 
     @GetMapping("/{email}")

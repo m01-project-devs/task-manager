@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 
 import java.time.LocalDateTime;
@@ -89,8 +88,17 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
     @Override
-    public List<User> search(String query) {
-        return userRepository.search(query);
+    public Page<User> search(String query,Pageable pageable) {
+        if (query == null) {
+            return Page.empty(pageable);
+        }
+
+        String trimmedQuery = query.trim();
+
+        if (trimmedQuery.length() < 3){
+            throw new IllegalArgumentException("Search text must be at least 3 characters.");
+        }
+        return userRepository.search(trimmedQuery, pageable);
     }
 
 }
