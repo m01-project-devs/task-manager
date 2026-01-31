@@ -185,12 +185,12 @@ public class UserServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
         Page<User> page = new PageImpl<>(List.of(user), pageable, 1);
 
-        when(userRepository.findAll(pageable)).thenReturn(page);
+        when(userRepository.findAllByDeletedAtIsNull(pageable)).thenReturn(page);
 
         Page<User> result = userService.getUsers(pageable);
 
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent()).containsExactly(user);
-        verify(userRepository).findAll(pageable);
+        verify(userRepository).findAllByDeletedAtIsNull(pageable);
     }
 }
