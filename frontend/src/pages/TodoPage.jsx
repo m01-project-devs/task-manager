@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getTodos, createTodo, updateTodo } from "../api/todoAPI";
+import { getTodos, createTodo, updateTodo, deleteTodo } from "../api/todoAPI";
 import TodoList from "../components/todo/TodoList";
 import { Box, Typography } from "@mui/material";
 import { SnackbarProvider, useSnackbar } from "notistack";
@@ -28,10 +28,10 @@ function TodoPageContent() {
       );
   }, [boardId]);
 
-  const handleAdd = async (title) => {
+  const handleAdd = async (title, description) => {
     if (!title.trim()) return;
     try {
-      await createTodo(boardId, title);
+      await createTodo(boardId, { title, description });
       enqueueSnackbar("Todo added", { variant: "success" });
       loadTodos();
     } catch {
@@ -61,12 +61,38 @@ function TodoPageContent() {
     }
   };
 
+    const handleUpdate = async (todoId, title, description) => {
+      const todo = todos.find((t) => t.id === todoId);
+      if (!todo) return;
+
+      try {
+        // Optimistic UI update
+        setTodos(prev =>
+          prev.map(t =>
+            t.id === todoId ? { ...t, title, description } : t
+          )
+        );
+
+        await updateTodo(boardId, todoId, {
+          title,
+          description,
+          completed: todo.completed,
+        });
+
+      } catch (error) {
+        console.error(error);
+        enqueueSnackbar("Failed to update todo", { variant: "error" });
+        loadTodos(); // rollback
+      }
+    };
+
+
   const handleDelete = async (todoId) => {
     const todo = todos.find((t) => t.id === todoId);
     if (!todo) return;
 
     try {
-      await updateTodo(boardId, todoId, {
+      await deleteTodo(boardId, todoId, {
         title: todo.title,
         deleted: true,
       });
@@ -91,6 +117,7 @@ function TodoPageContent() {
         onAdd={handleAdd}
         onToggle={handleToggle}
         onDelete={handleDelete}
+        onUpdate={handleUpdate}
       />
     </Box>
   );

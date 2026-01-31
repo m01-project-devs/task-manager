@@ -63,6 +63,7 @@ public class TodoItemServiceImpl implements TodoItemService {
         }
 
         item.setDescription(request.getDescription());
+        item.setCompleted(request.isCompleted());
 
         TodoItem saved = todoItemRepository.save(item);
         return mapToResponse(saved);

@@ -7,8 +7,8 @@ export async function getTodos(boardId) {
   return res.data.content;
 }
 
-export async function createTodo(boardId, title) {
-  const res = await api.post(`/todo/${boardId}`, { title });
+export async function createTodo(boardId, data) {
+  const res = await api.post(`/todo/${boardId}`, data);
   return res.data;
 }
 
