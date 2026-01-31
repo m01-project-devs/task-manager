@@ -139,6 +139,18 @@ const LoginPage = () => {
             Register
           </Link>
         </Typography>
+
+        <Typography variant="body2" sx={{ mt: 1, color: "#1f2937" }}>
+          Forgot your password?{" "}
+          <Link
+            component={RouterLink}
+            to="/forgot-password"
+            sx={{ color: "#2196f3" }}
+            underline="always"
+          >
+            Reset it
+          </Link>
+        </Typography>
       </Box>
 
       {/* ERROR */}

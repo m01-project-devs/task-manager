@@ -7,6 +7,7 @@ import com.m01project.taskmanager.dto.response.TodoItemResponse;
 import com.m01project.taskmanager.exception.ResourceNotFoundException;
 import com.m01project.taskmanager.repository.BoardRepository;
 import com.m01project.taskmanager.repository.TodoItemRepository;
+import com.m01project.taskmanager.service.impl.TodoItemServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,7 +40,7 @@ class TodoItemServiceTest {
     private BoardRepository boardRepository;
 
     @InjectMocks
-    private TodoItemService todoItemService;
+    private TodoItemServiceImpl todoItemService;
 
     @Test
     void shouldReturnTodoItem_whenExists() {
@@ -76,7 +77,7 @@ class TodoItemServiceTest {
         request.setTitle("New Task");
         request.setDescription("Desc");
 
-        when(boardRepository.findById(1L)).thenReturn(Optional.empty());
+        when(boardRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> todoItemService.createTodoItem(request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
@@ -100,7 +101,7 @@ class TodoItemServiceTest {
         saved.setCompleted(false);
         saved.setBoard(board);
 
-        when(boardRepository.findById(1L)).thenReturn(Optional.of(board));
+        when(boardRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(board));
         when(todoItemRepository.save(any(TodoItem.class))).thenReturn(saved);
 
         TodoItemResponse response = todoItemService.createTodoItem(request, 1L);
@@ -174,7 +175,7 @@ class TodoItemServiceTest {
 
     @Test
     void getBoardItems_whenBoardMissing_shouldThrowException() {
-        when(boardRepository.existsById(1L)).thenReturn(false);
+        when(boardRepository.existsByIdAndDeletedAtIsNull(1L)).thenReturn(false);
 
         assertThatThrownBy(() -> todoItemService.getBoardItems(1L, 0, 5))
                 .isInstanceOf(ResourceNotFoundException.class)
@@ -196,7 +197,7 @@ class TodoItemServiceTest {
         Pageable pageable = PageRequest.of(0, 5);
         Page<TodoItem> page = new PageImpl<>(List.of(item), pageable, 1);
 
-        when(boardRepository.existsById(1L)).thenReturn(true);
+        when(boardRepository.existsByIdAndDeletedAtIsNull(1L)).thenReturn(true);
         when(todoItemRepository.findByBoardIdAndDeletedAtIsNullOrderByIdAsc(1L, pageable))
                 .thenReturn(page);
 

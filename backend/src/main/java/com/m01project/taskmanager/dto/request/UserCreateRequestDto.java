@@ -1,5 +1,6 @@
 package com.m01project.taskmanager.dto.request;
 
+import com.m01project.taskmanager.security.PasswordConstraints;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,15 @@ public class UserCreateRequestDto {
     private String email;
 
     @NotBlank(message = "Password can not be null or blank.")
-    @Size(min = 4, max = 20, message = "password should be between 4 to 20.")
+    @Size(
+            min = PasswordConstraints.MIN_LENGTH,
+            max = PasswordConstraints.MAX_LENGTH,
+            message = PasswordConstraints.ERROR_MESSAGE
+    )
+    @Pattern(
+            regexp = PasswordConstraints.REGEX,
+            message = PasswordConstraints.ERROR_MESSAGE
+    )
     private String password;
 
     @NotBlank(message = "Name can not be null or blank.")

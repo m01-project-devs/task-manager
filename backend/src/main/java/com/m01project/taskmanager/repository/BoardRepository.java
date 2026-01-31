@@ -14,6 +14,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Optional<Board> findByIdAndUserAndDeletedAtIsNull(Long id, User user);
 
+    Optional<Board> findByIdAndDeletedAtIsNull(Long id);
+
+    boolean existsByIdAndDeletedAtIsNull(Long id);
+
     boolean existsByUserAndTitleAndDeletedAtIsNull(User user, String title);
 
 }

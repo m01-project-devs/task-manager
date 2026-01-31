@@ -55,7 +55,9 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = userRepository.findByEmailAndDeletedAtIsNull(email);
         if(user.isEmpty()) throw new ResourceNotFoundException("User not found.");
         User updated = user.get();
-        updated.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            updated.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
         updated.setFirstName(request.getFirstName());
         updated.setLastName(request.getLastName());
         return userRepository.save(updated);
@@ -63,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> getUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        return userRepository.findAllByDeletedAtIsNull(pageable);
     }
 
     @Override

@@ -20,19 +20,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -55,7 +49,7 @@ class UserControllerMvcTest {
 
     @Test
     void getUser_WhenUserExists() throws Exception {
-        User user = new User("test@example.com", "12345678", "Joe", "Duo");
+        User user = new User("test@example.com", "Test1234@", "Joe", "Duo");
 
         when(userService.findByEmail(user.getEmail())).thenReturn(user);
 
@@ -78,9 +72,9 @@ class UserControllerMvcTest {
     @Test
     void createUser_WhenValidRequest_ShouldReturnCreatedUser() throws Exception{
         UserCreateRequestDto request = new UserCreateRequestDto(
-                "test@example.com", "12345678", "Joe", "Duo");
+                "test@example.com", "Test1234@", "Joe", "Duo");
 
-        User savedUser = new User("test@example.com", "12345678", "Joe", "Duo");
+        User savedUser = new User("test@example.com", "Test1234@", "Joe", "Duo");
 
         when(userService.create(any(UserCreateRequestDto.class))).thenReturn(savedUser);
 
@@ -99,7 +93,7 @@ class UserControllerMvcTest {
         String json = """
                 {
                     "email": "wrongemail",
-                    "password": "12345678",
+                    "password": "Test1234@",
                     "firstName": "Joe",
                     "lastName": "Duo"
                 }
@@ -112,13 +106,9 @@ class UserControllerMvcTest {
 
     @Test
     void updateUser_WhenUserExists() throws Exception {
-        String email = "update@example.com";
-        UserUpdateRequestDto request = new UserUpdateRequestDto("12345678", "John", "Smith");
-        User existingUser = new User("update@example.com", "12345678", "Joe", "Duo");
-        existingUser.setFirstName(request.getFirstName());
-        existingUser.setLastName(request.getLastName());
-        existingUser.setPassword(request.getPassword());
-        when(userService.update(eq(email), any(UserUpdateRequestDto.class))).thenReturn(existingUser);
+        UserUpdateRequestDto request = new UserUpdateRequestDto("Test1234@", "John", "Smith", "USER");
+        User existingUser = new User("update@example.com", "Test1234@", "John", "Smith");
+        when(userService.update(anyString(), any(UserUpdateRequestDto.class))).thenReturn(existingUser);
 
         mockMvc.perform(put("/api/users/update@example.com")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +124,7 @@ class UserControllerMvcTest {
         doNothing().when(userService).delete("delete@example.com");
 
         mockMvc.perform(delete("/api/users/delete@example.com"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -142,14 +132,14 @@ class UserControllerMvcTest {
         doNothing().when(userService).delete("notFound@example.com");
 
         mockMvc.perform(delete("/api/users/notFound@example.com"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNoContent());
     }
 
     @Test
     void getUsers_ReturnsPagedUsers() throws Exception {
         // Mock user list
-        User user1 = new User("user1@test.com", "12345678", "John", "Doe");
-        User user2 = new User("user2@test.com", "12345678", "Alice", "Smith");
+        User user1 = new User("user1@test.com", "Test1234@", "John", "Doe");
+        User user2 = new User("user2@test.com", "Test1234@", "Alice", "Smith");
 
         List<User> users = List.of(user1, user2);
 

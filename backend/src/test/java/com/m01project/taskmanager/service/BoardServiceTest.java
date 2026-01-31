@@ -7,6 +7,7 @@ import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.exception.BoardNotFoundException;
 import com.m01project.taskmanager.exception.DuplicateBoardTitleException;
 import com.m01project.taskmanager.repository.BoardRepository;
+import com.m01project.taskmanager.service.impl.BoardServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,7 +38,7 @@ class BoardServiceTest {
     private BoardRepository boardRepository;
 
     @InjectMocks
-    private BoardService boardService;
+    private BoardServiceImpl boardService;
 
     @Test
     void createBoard_shouldSaveBoard() {
@@ -187,11 +188,11 @@ class BoardServiceTest {
         board.setTitle("Old Title");
 
         BoardRequest request = new BoardRequest();
-        request.setTitle("Old Title");
+        request.setTitle("New Title");
 
         when(boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user))
                 .thenReturn(Optional.of(board));
-        when(boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, "Old Title"))
+        when(boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, "New Title"))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> boardService.updateBoard(boardId, request, user))

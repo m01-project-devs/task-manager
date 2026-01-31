@@ -31,4 +31,5 @@ WHERE u.deletedAt IS NULL AND
 """)
     Page<User> search(@Param("q") String q, Pageable pageable);
 
+    Page<User> findAllByDeletedAtIsNull(@NonNull Pageable pageable);
 }

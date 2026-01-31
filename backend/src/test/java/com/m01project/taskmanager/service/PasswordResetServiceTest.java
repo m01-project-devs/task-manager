@@ -1,5 +1,7 @@
 package com.m01project.taskmanager.service;
 
+import com.m01project.emailsender.application.port.EmailMessage;
+import com.m01project.emailsender.application.port.EmailSender;
 import com.m01project.taskmanager.domain.PasswordResetToken;
 import com.m01project.taskmanager.domain.Role;
 import com.m01project.taskmanager.domain.User;
@@ -8,6 +10,7 @@ import com.m01project.taskmanager.exception.TokenAlreadyUsedException;
 import com.m01project.taskmanager.exception.TokenExpiredException;
 import com.m01project.taskmanager.repository.PasswordResetTokenRepository;
 import com.m01project.taskmanager.repository.UserRepository;
+import com.m01project.taskmanager.service.impl.PasswordResetServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,8 +39,14 @@ class PasswordResetServiceTest {
     @Mock
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
+    @Mock
+    private EmailSender emailSender;
+
+    @Mock
+    private PasswordResetEmailComposer emailComposer;
+
     @InjectMocks
-    private PasswordResetService passwordResetService;
+    private PasswordResetServiceImpl passwordResetService;
 
     private User user;
 
@@ -55,6 +64,9 @@ class PasswordResetServiceTest {
     @Test
     void forgotPassword_userExists_savesToken(){
         when(userRepository.findByEmailAndDeletedAtIsNull("example@gmail.com")).thenReturn(Optional.of(user));
+        EmailMessage emailMessage = mock(EmailMessage.class);
+        when(emailComposer.compose(eq("example@gmail.com"), any(UUID.class))).thenReturn(emailMessage);
+
         passwordResetService.forgotPassword("example@gmail.com");
         ArgumentCaptor<PasswordResetToken> captor = ArgumentCaptor.forClass(PasswordResetToken.class);
         verify(passwordResetTokenRepository, times(1)).save(captor.capture());
@@ -66,6 +78,7 @@ class PasswordResetServiceTest {
         assertNull(saved.getUsedAt());
 
         verifyNoMoreInteractions(passwordResetTokenRepository);
+        verify(emailSender, times(1)).send(emailMessage);
     }
 
     @Test

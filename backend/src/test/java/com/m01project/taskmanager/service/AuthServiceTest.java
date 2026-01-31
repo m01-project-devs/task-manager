@@ -8,6 +8,7 @@ import com.m01project.taskmanager.dto.response.UserResponse;
 import com.m01project.taskmanager.exception.EmailAlreadyUsedException;
 import com.m01project.taskmanager.repository.UserRepository;
 import com.m01project.taskmanager.security.JwtService;
+import com.m01project.taskmanager.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -39,7 +40,7 @@ class AuthServiceTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private AuthService authService;
+    private AuthServiceImpl authService;
 
     @Test
     void register_whenEmailUnused_shouldSaveUserAndReturnResponse() {

@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 import BoardPage from "./pages/BoardPage";
 import TodoPage from "./pages/TodoPage";
 import AdminUserPage from "./pages/AdminUserPage";
@@ -8,6 +10,7 @@ import AdminUserPage from "./pages/AdminUserPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AuthLayout from "./components/layout/AuthLayout";
 import HomeLayout from "./components/layout/HomeLayout";
+
 
 function App() {
   return (
@@ -32,6 +35,25 @@ function App() {
           }
         />
 
+        <Route
+           path="/resetpassword"
+           element={
+             <AuthLayout>
+               <ResetPassword />
+             </AuthLayout>
+           }
+        />
+
+        <Route
+            path="/forgot-password"
+            element={
+                <AuthLayout>
+                    <ForgotPassword />
+                </AuthLayout>
+            }
+        />
+
+        {/* HOME */}
         <Route
           path="/boards"
           element={
