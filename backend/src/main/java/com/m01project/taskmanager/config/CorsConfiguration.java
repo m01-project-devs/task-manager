@@ -17,7 +17,7 @@ public class CorsConfiguration implements WebMvcConfigurer {
         registry.addMapping("/**") // Apply this CORS configuration to all API paths
                 .allowedOrigins(allowedOrigins) // Use the configurable list of origins
                 .allowCredentials(false) // Authentication is via token in header, not cookies
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow all necessary HTTP methods
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // Allow all necessary HTTP methods
                 .allowedHeaders("Authorization", "Content-Type");
     }
 

@@ -6,11 +6,11 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TextField,
   TablePagination,
+  TextField,
   InputAdornment,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useState, useMemo } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 
 import UserRow from "./UserRow";
@@ -19,8 +19,7 @@ import { updateUser, deleteUser } from "../../api/userAPI";
 import SortableTableHead from "../common/SortableTableHead.jsx";
 
 export default function UserTable({
-  users,
-  reload,
+  users = { content: [], totalElements: 0 },
   enqueueSnackbar,
   page,
   rowsPerPage,
@@ -30,13 +29,15 @@ export default function UserTable({
   onSort,
   searchValue = "",
   onSearchChange,
+  showSearch = true,
 }) {
-
+  const [search, setSearch] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(null);
 
+  const [localUsers, setLocalUsers] = useState(() => [...users.content]);
 
-    /* ---------- COLUMNS CONFIG ---------- */
+
     const columns = [
         { field: 'index', label: '№', sortable: false },
         { field: 'email', label: 'Email', sortable: true },
@@ -46,16 +47,30 @@ export default function UserTable({
         { field: 'actions', label: 'Actions', sortable: false, align: 'right' },
     ];
 
-  /* ---------- ACTIONS ---------- */
+  const filteredUsers = useMemo(() => {
+    if (!showSearch) return localUsers;
+    return localUsers.filter((u) =>
+      `${u.email} ${u.firstName} ${u.lastName} ${u.role}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
+  }, [localUsers, search, showSearch]);
+
   const handleUpdate = async (email, payload) => {
-      try {
-          await updateUser(email, payload);
-          enqueueSnackbar("User updated", {variant: "info"});
-          reload();
-      }catch(error) {
-          console.error(error);
-          enqueueSnackbar("Failed to update user", { variant: "error" });
-      }
+    try {
+      await updateUser(email, payload);
+      enqueueSnackbar("User updated", { variant: "info" });
+
+      setLocalUsers(prev =>
+        prev.map(u =>
+          u.email === email
+            ? { ...u, firstName: payload.firstName, lastName: payload.lastName }
+            : u
+        )
+      );
+    } catch {
+      enqueueSnackbar("Failed to update user", { variant: "error" });
+    }
   };
 
   const askDelete = (email) => {
@@ -64,20 +79,21 @@ export default function UserTable({
   };
 
   const confirmDelete = async () => {
-      try{
-        await deleteUser(selectedEmail);
-          enqueueSnackbar("User deleted", { variant: "success" });
-          setConfirmOpen(false);
+    try {
+      await deleteUser(selectedEmail);
+      enqueueSnackbar("User deleted", { variant: "success" });
+
+      setLocalUsers(prev => prev.filter(u => u.email !== selectedEmail));
+      setConfirmOpen(false);
+      setSelectedEmail(null);
+    } catch (err) {
+        console.error(err);
+      enqueueSnackbar("Failed to delete user", { variant: "error" });
+    } finally {
+        setConfirmOpen(false);
         setSelectedEmail(null);
         reload();
-      }catch (err) {
-          console.error(err);
-          enqueueSnackbar("Failed to delete user", { variant: "error" });
-      } finally {
-          setConfirmOpen(false);
-          setSelectedEmail(null);
-          reload();
-      }
+    }
   };
 
   return (
@@ -86,52 +102,45 @@ export default function UserTable({
         <TableContainer>
           <Table>
             <TableHead>
-              {/* SEARCH ROW */}
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    placeholder="Search by email, name or role…"
-                    value={searchValue}
-                    onChange={(e) => {
-                      onSearchChange(e.target.value);
-                      onPageChange(0);
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon fontSize="small" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-
-                {/* SORTABLE HEADER */}
+              {showSearch && (
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      placeholder="Search by email, name or role…"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon fontSize="small" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
                 <SortableTableHead
                     columns={columns}
                     sortConfig={sortConfig}
                     onSort={onSort}
                 />
             </TableHead>
-
-              <TableBody>
-                  {(users.content || []).map((u, index) => (
-                      <UserRow
-                          key={u.email}
-                          index={page * rowsPerPage + index}
-                          user={u}
-                          onUpdate={handleUpdate}
-                          onAskDelete={askDelete}
-                      />
-                  ))}
-              </TableBody>
+            <TableBody>
+              {filteredUsers.map((u, idx) => (
+                <UserRow
+                  key={u.email}
+                  index={page * rowsPerPage + idx}
+                  user={u}
+                  onUpdate={handleUpdate}
+                  onAskDelete={askDelete}
+                />
+              ))}
+            </TableBody>
           </Table>
         </TableContainer>
-
-        {/* PAGINATION */}
         <TablePagination
           component="div"
           count={users.totalElements || 0}
@@ -146,7 +155,6 @@ export default function UserTable({
         />
       </Paper>
 
-      {/* CONFIRM DELETE */}
       <ConfirmDialog
         open={confirmOpen}
         title="Delete user"

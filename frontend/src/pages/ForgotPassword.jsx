@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { forgotPassword } from "../api/auth";
-import "./ForgotPassword.css";
+import { Box, TextField, Button, Typography, Snackbar, Alert, Container } from "@mui/material";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -23,46 +23,73 @@ export default function ForgotPassword() {
     try {
       setLoading(true);
       await forgotPassword(email);
-      setSuccess(
-          passwordResetSuccessMsg
-      );
+      setSuccess(passwordResetSuccessMsg);
     } catch {
-      setSuccess(
-        passwordResetSuccessMsg
-      );
+      setSuccess(passwordResetSuccessMsg);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="forgot-page">
-      <div className="forgot-card">
-        <h2>Forgot Password</h2>
-        <p>Enter your email and we’ll send you a reset link.</p>
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          p: 4,
+          mt: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          boxShadow: 3,
+          borderRadius: 2,
+          backgroundColor: "rgba(255,255,255,0.2)",
+          backdropFilter: "blur(20px)"
+        }}
+      >
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, textAlign: "center" }}>
+          Forgot Password
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: "center" }}>
+          Enter your email and we’ll send you a reset link.
+        </Typography>
 
-        <form onSubmit={onSubmit}>
-          <input
-            className="forgot-input"
+        <Box component="form" onSubmit={onSubmit} sx={{ width: "100%" }}>
+          <TextField
             type="email"
-            placeholder="Email address"
+            label="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
             disabled={loading}
           />
 
-          <button className="forgot-button" type="submit" disabled={loading}>
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{ mt: 2, py: 1.5, fontWeight: 600 }}
+            disabled={loading}
+          >
             {loading ? "Sending..." : "Send reset link"}
-          </button>
-        </form>
+          </Button>
+        </Box>
 
-        {error && <div className="error">{error}</div>}
-        {success && <div className="success">{success}</div>}
+        <Typography align="center" sx={{ mt: 3 }}>
+          <Link to="/login" style={{ textDecoration: "none", color: "#0b5ed7", fontWeight: 600 }}>
+            Back to login
+          </Link>
+        </Typography>
+      </Box>
 
-        <div style={{ marginTop: 16 }}>
-          <Link to="/login">Back to login</Link>
-        </div>
-      </div>
-    </div>
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+        <Alert severity="error" onClose={() => setError("")}>{error}</Alert>
+      </Snackbar>
+
+      <Snackbar open={!!success} autoHideDuration={3000} onClose={() => setSuccess("")} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+        <Alert severity="success">{success}</Alert>
+      </Snackbar>
+    </Container>
   );
 }

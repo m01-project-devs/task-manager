@@ -5,29 +5,31 @@ import { useState } from "react";
 export default function BoardList({ boards, onDelete, onSave }) {
   const [editingBoardId, setEditingBoardId] = useState(null);
 
-  const handleEdit = (board) => setEditingBoardId(board.id);
-  const handleCancelEdit = () => setEditingBoardId(null);
-
-  const handleSaveLocal = async (boardId, newName) => {
-    await onSave(boardId, newName);
-    setEditingBoardId(null);
-  };
-
-  const handleDeleteLocal = (board) => {
-    onDelete(board); 
-  };
-
   return (
-    <Box>
+    <Box
+      sx={{
+        display: "grid",
+        gap: 2,
+        gridTemplateColumns: {
+          xs: "1fr",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(3, 1fr)",
+          lg: "repeat(4, 1fr)",
+        },
+      }}
+    >
       {boards.map((board) => (
         <BoardItem
           key={board.id}
           board={board}
           isEditing={editingBoardId === board.id}
-          onEdit={() => handleEdit(board)}
-          onCancelEdit={handleCancelEdit}
-          onSave={(newName) => handleSaveLocal(board.id, newName)}
-          onDelete={() => handleDeleteLocal(board)}
+          onEdit={() => setEditingBoardId(board.id)}
+          onCancelEdit={() => setEditingBoardId(null)}
+          onSave={(newName) => {
+            onSave(board.id, newName);
+            setEditingBoardId(null);
+          }}
+          onDelete={() => onDelete(board)}
           onClick={() => (window.location.href = `/boards/${board.id}`)}
         />
       ))}

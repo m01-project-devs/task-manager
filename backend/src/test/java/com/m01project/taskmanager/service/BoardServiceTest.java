@@ -7,6 +7,8 @@ import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.exception.BoardNotFoundException;
 import com.m01project.taskmanager.exception.DuplicateBoardTitleException;
 import com.m01project.taskmanager.repository.BoardRepository;
+import com.m01project.taskmanager.repository.TodoItemRepository;
+import com.m01project.taskmanager.service.impl.BoardServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +39,11 @@ class BoardServiceTest {
     @Mock
     private BoardRepository boardRepository;
 
+    @Mock
+    private TodoItemRepository todoItemRepository;
+
     @InjectMocks
-    private BoardService boardService;
+    private BoardServiceImpl boardService;
 
     @Test
     void createBoard_shouldSaveBoard() {
@@ -110,9 +116,12 @@ class BoardServiceTest {
 
         when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
                 .thenReturn(Optional.of(board));
+        when(todoItemRepository.findByBoardAndDeletedAtIsNull(board))
+                .thenReturn(Collections.emptyList());
 
         boardService.deleteBoard(1L, user);
 
+        assertThat(board.getDeletedAt()).isNotNull();
         verify(boardRepository).save(board);
     }
 
@@ -187,11 +196,11 @@ class BoardServiceTest {
         board.setTitle("Old Title");
 
         BoardRequest request = new BoardRequest();
-        request.setTitle("Old Title");
+        request.setTitle("New Title");
 
         when(boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user))
                 .thenReturn(Optional.of(board));
-        when(boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, "Old Title"))
+        when(boardRepository.existsByUserAndTitleAndDeletedAtIsNull(user, "New Title"))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> boardService.updateBoard(boardId, request, user))
