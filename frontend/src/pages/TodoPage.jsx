@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getTodos, createTodo, updateTodo } from "../api/todoAPI";
 import TodoList from "../components/todo/TodoList";
 import { Box, Typography } from "@mui/material";
@@ -8,24 +8,33 @@ import { SnackbarProvider, useSnackbar } from "notistack";
 function TodoPageContent() {
   const { boardId } = useParams();
   const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   const loadTodos = async () => {
     try {
+      setLoading(true);
       const data = await getTodos(boardId);
       setTodos(data || []);
     } catch (err) {
       console.error(err);
+      const status = err?.response?.status;
+      if (status === 404 || status === 403) {
+        enqueueSnackbar("Board not found or access denied", {
+          variant: "error",
+        });
+        navigate("/boards", { replace: true });
+        return;
+      }
       enqueueSnackbar("Failed to load todos", { variant: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    getTodos(boardId)
-      .then((data) => setTodos(data || []))
-      .catch(() =>
-        enqueueSnackbar("Failed to load todos", { variant: "error" }),
-      );
+    loadTodos();
   }, [boardId]);
 
   const handleAdd = async (title) => {
@@ -91,6 +100,7 @@ function TodoPageContent() {
         onAdd={handleAdd}
         onToggle={handleToggle}
         onDelete={handleDelete}
+        disabled={loading}
       />
     </Box>
   );

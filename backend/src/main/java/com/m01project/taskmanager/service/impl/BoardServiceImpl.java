@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +53,7 @@ public class BoardServiceImpl implements BoardService {
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
 
         board.setDeletedAt(LocalDateTime.now());
+        board.setTitle(board.getTitle() + "-deleted-" + UUID.randomUUID());
         boardRepository.save(board);
     }
 

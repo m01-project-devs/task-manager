@@ -3,7 +3,7 @@ import TodoItem from "./TodoItem";
 import { Add } from "@mui/icons-material";
 import { useState } from "react";
 
-export default function TodoList({ todos, onAdd, onToggle, onDelete }) {
+export default function TodoList({ todos, onAdd, onToggle, onDelete, disabled }) {
   const [newTodo, setNewTodo] = useState("");
 
   const handleAddClick = () => {
@@ -19,6 +19,7 @@ export default function TodoList({ todos, onAdd, onToggle, onDelete }) {
           label="New Todo"
           value={newTodo}
           onChange={(e) => setNewTodo(e.target.value)}
+          disabled={disabled}
           fullWidth
         />
         <Button
@@ -26,6 +27,7 @@ export default function TodoList({ todos, onAdd, onToggle, onDelete }) {
           variant="contained"
           onClick={handleAddClick}
           startIcon={<Add />}
+          disabled={disabled}
         >
           Add
         </Button>
@@ -37,6 +39,7 @@ export default function TodoList({ todos, onAdd, onToggle, onDelete }) {
           todo={todo}
           onToggle={onToggle}
           onDelete={onDelete}
+          disabled={disabled}
         />
       ))}
     </Box>

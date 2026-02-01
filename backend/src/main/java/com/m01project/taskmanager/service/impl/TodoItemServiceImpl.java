@@ -1,6 +1,7 @@
 package com.m01project.taskmanager.service.impl;
 
 import com.m01project.taskmanager.domain.Board;
+import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.domain.TodoItem;
 import com.m01project.taskmanager.dto.request.TodoItemRequest;
 import com.m01project.taskmanager.dto.response.TodoItemResponse;
@@ -26,8 +27,8 @@ public class TodoItemServiceImpl implements TodoItemService {
 
     @Override
     @Transactional
-    public TodoItemResponse createTodoItem(TodoItemRequest request, Long boardId) {
-        Board board = boardRepository.findByIdAndDeletedAtIsNull(boardId)
+    public TodoItemResponse createTodoItem(TodoItemRequest request, Long boardId, User user) {
+        Board board = boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Board not found"));
 
         TodoItem todoItem = new TodoItem();
@@ -42,7 +43,9 @@ public class TodoItemServiceImpl implements TodoItemService {
 
     @Override
     @Transactional
-    public TodoItemResponse getTodoItem(Long boardId, Long itemId) {
+    public TodoItemResponse getTodoItem(Long boardId, Long itemId, User user) {
+        boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Board not found"));
         TodoItem item = todoItemRepository
                 .findByIdAndBoardIdAndDeletedAtIsNull(itemId, boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Todo item not found for this board"));
@@ -51,7 +54,9 @@ public class TodoItemServiceImpl implements TodoItemService {
 
     @Override
     @Transactional
-    public TodoItemResponse updateToDoItem(Long boardId, Long itemId, TodoItemRequest request) {
+    public TodoItemResponse updateToDoItem(Long boardId, Long itemId, TodoItemRequest request, User user) {
+        boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Board not found"));
         TodoItem item = todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(itemId, boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Todo item is not found for this board"));
 
@@ -69,10 +74,9 @@ public class TodoItemServiceImpl implements TodoItemService {
     }
 
     @Override
-    public Page<TodoItemResponse> getBoardItems(Long boardId, int page, int size) {
-        if (!boardRepository.existsByIdAndDeletedAtIsNull(boardId)) {
-            throw new ResourceNotFoundException("Board not found");
-        }
+    public Page<TodoItemResponse> getBoardItems(Long boardId, int page, int size, User user) {
+        boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Board not found"));
 
         Pageable pageable = PageRequest.of(page, size);
         Page<TodoItem> items = todoItemRepository.findByBoardIdAndDeletedAtIsNullOrderByIdAsc(boardId, pageable);
@@ -82,7 +86,9 @@ public class TodoItemServiceImpl implements TodoItemService {
 
     @Override
     @Transactional
-    public void deleteTodoItem(Long boardId, Long itemId) {
+    public void deleteTodoItem(Long boardId, Long itemId, User user) {
+        boardRepository.findByIdAndUserAndDeletedAtIsNull(boardId, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Board not found"));
         TodoItem item = todoItemRepository
                 .findByIdAndBoardIdAndDeletedAtIsNull(itemId, boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Todo item not found for this board"));

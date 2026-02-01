@@ -1,7 +1,7 @@
 import { Box, Typography, Checkbox, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function TodoItem({ todo, onToggle, onDelete }) {
+export default function TodoItem({ todo, onToggle, onDelete, disabled }) {
   if (todo.deleted) return null;
 
   return (
@@ -13,7 +13,11 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
         gap: 1,
       }}
     >
-      <Checkbox checked={todo.completed} onChange={() => onToggle(todo.id)} />
+      <Checkbox
+        checked={todo.completed}
+        onChange={() => onToggle(todo.id)}
+        disabled={disabled}
+      />
 
       <Typography
         sx={{
@@ -24,7 +28,7 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
         {todo.title}
       </Typography>
 
-      <IconButton color="error" onClick={() => onDelete(todo.id)}>
+      <IconButton color="error" onClick={() => onDelete(todo.id)} disabled={disabled}>
         <DeleteIcon />
       </IconButton>
     </Box>

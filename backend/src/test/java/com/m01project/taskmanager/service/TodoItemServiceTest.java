@@ -2,6 +2,7 @@ package com.m01project.taskmanager.service;
 
 import com.m01project.taskmanager.domain.Board;
 import com.m01project.taskmanager.domain.TodoItem;
+import com.m01project.taskmanager.domain.User;
 import com.m01project.taskmanager.dto.request.TodoItemRequest;
 import com.m01project.taskmanager.dto.response.TodoItemResponse;
 import com.m01project.taskmanager.exception.ResourceNotFoundException;
@@ -44,6 +45,7 @@ class TodoItemServiceTest {
 
     @Test
     void shouldReturnTodoItem_whenExists() {
+        User user = new User();
         Board board = new Board();
         board.setId(1L);
 
@@ -54,8 +56,10 @@ class TodoItemServiceTest {
 
         when(todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(10L, 1L))
                 .thenReturn(Optional.of(item));
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
+                .thenReturn(Optional.of(board));
 
-        TodoItemResponse response = todoItemService.getTodoItem(1L, 10L);
+        TodoItemResponse response = todoItemService.getTodoItem(1L, 10L, user);
 
         assertEquals("test", response.getTitle());
         assertEquals(10L, response.getId());
@@ -63,23 +67,27 @@ class TodoItemServiceTest {
 
     @Test
     void getTodoItem_whenMissing_shouldThrowException() {
+        User user = new User();
         when(todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(10L, 1L))
                 .thenReturn(Optional.empty());
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
+                .thenReturn(Optional.of(new Board()));
 
-        assertThatThrownBy(() -> todoItemService.getTodoItem(1L, 10L))
+        assertThatThrownBy(() -> todoItemService.getTodoItem(1L, 10L, user))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Todo item not found for this board");
     }
 
     @Test
     void createTodoItem_whenBoardMissing_shouldThrowException() {
+        User user = new User();
         TodoItemRequest request = new TodoItemRequest();
         request.setTitle("New Task");
         request.setDescription("Desc");
 
-        when(boardRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> todoItemService.createTodoItem(request, 1L))
+        assertThatThrownBy(() -> todoItemService.createTodoItem(request, 1L, user))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Board not found");
         verify(todoItemRepository, never()).save(any());
@@ -87,6 +95,7 @@ class TodoItemServiceTest {
 
     @Test
     void createTodoItem_shouldTrimTitleAndSave() {
+        User user = new User();
         Board board = new Board();
         board.setId(1L);
 
@@ -101,10 +110,10 @@ class TodoItemServiceTest {
         saved.setCompleted(false);
         saved.setBoard(board);
 
-        when(boardRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(board));
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user)).thenReturn(Optional.of(board));
         when(todoItemRepository.save(any(TodoItem.class))).thenReturn(saved);
 
-        TodoItemResponse response = todoItemService.createTodoItem(request, 1L);
+        TodoItemResponse response = todoItemService.createTodoItem(request, 1L, user);
 
         assertThat(response.getTitle()).isEqualTo("New Task");
         assertThat(response.getDescription()).isEqualTo("Desc");
@@ -114,19 +123,23 @@ class TodoItemServiceTest {
 
     @Test
     void updateTodoItem_whenMissing_shouldThrowException() {
+        User user = new User();
         TodoItemRequest request = new TodoItemRequest();
         request.setTitle("Updated");
 
         when(todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(10L, 1L))
                 .thenReturn(Optional.empty());
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
+                .thenReturn(Optional.of(new Board()));
 
-        assertThatThrownBy(() -> todoItemService.updateToDoItem(1L, 10L, request))
+        assertThatThrownBy(() -> todoItemService.updateToDoItem(1L, 10L, request, user))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Todo item is not found for this board");
     }
 
     @Test
     void updateTodoItem_whenBlankTitle_shouldThrowException() {
+        User user = new User();
         Board board = new Board();
         board.setId(1L);
 
@@ -138,16 +151,19 @@ class TodoItemServiceTest {
         TodoItemRequest request = new TodoItemRequest();
         request.setTitle("   ");
 
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
+                .thenReturn(Optional.of(board));
         when(todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(10L, 1L))
                 .thenReturn(Optional.of(item));
 
-        assertThatThrownBy(() -> todoItemService.updateToDoItem(1L, 10L, request))
+        assertThatThrownBy(() -> todoItemService.updateToDoItem(1L, 10L, request, user))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Title cannot be empty!");
     }
 
     @Test
     void updateTodoItem_shouldUpdateFields() {
+        User user = new User();
         Board board = new Board();
         board.setId(1L);
 
@@ -164,9 +180,11 @@ class TodoItemServiceTest {
 
         when(todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(10L, 1L))
                 .thenReturn(Optional.of(item));
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
+                .thenReturn(Optional.of(board));
         when(todoItemRepository.save(any(TodoItem.class))).thenReturn(item);
 
-        TodoItemResponse response = todoItemService.updateToDoItem(1L, 10L, request);
+        TodoItemResponse response = todoItemService.updateToDoItem(1L, 10L, request, user);
 
         assertThat(response.getTitle()).isEqualTo("Updated");
         assertThat(response.getDescription()).isEqualTo("New Desc");
@@ -175,15 +193,17 @@ class TodoItemServiceTest {
 
     @Test
     void getBoardItems_whenBoardMissing_shouldThrowException() {
-        when(boardRepository.existsByIdAndDeletedAtIsNull(1L)).thenReturn(false);
+        User user = new User();
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> todoItemService.getBoardItems(1L, 0, 5))
+        assertThatThrownBy(() -> todoItemService.getBoardItems(1L, 0, 5, user))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Board not found");
     }
 
     @Test
     void getBoardItems_shouldReturnPagedItems() {
+        User user = new User();
         Board board = new Board();
         board.setId(1L);
 
@@ -197,11 +217,11 @@ class TodoItemServiceTest {
         Pageable pageable = PageRequest.of(0, 5);
         Page<TodoItem> page = new PageImpl<>(List.of(item), pageable, 1);
 
-        when(boardRepository.existsByIdAndDeletedAtIsNull(1L)).thenReturn(true);
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user)).thenReturn(Optional.of(board));
         when(todoItemRepository.findByBoardIdAndDeletedAtIsNullOrderByIdAsc(1L, pageable))
                 .thenReturn(page);
 
-        Page<TodoItemResponse> result = todoItemService.getBoardItems(1L, 0, 5);
+        Page<TodoItemResponse> result = todoItemService.getBoardItems(1L, 0, 5, user);
 
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getTitle()).isEqualTo("Task");
@@ -209,16 +229,20 @@ class TodoItemServiceTest {
 
     @Test
     void deleteTodoItem_whenMissing_shouldThrowException() {
+        User user = new User();
         when(todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(10L, 1L))
                 .thenReturn(Optional.empty());
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
+                .thenReturn(Optional.of(new Board()));
 
-        assertThatThrownBy(() -> todoItemService.deleteTodoItem(1L, 10L))
+        assertThatThrownBy(() -> todoItemService.deleteTodoItem(1L, 10L, user))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Todo item not found for this board");
     }
 
     @Test
     void deleteTodoItem_shouldSetDeletedAt() {
+        User user = new User();
         Board board = new Board();
         board.setId(1L);
 
@@ -229,8 +253,10 @@ class TodoItemServiceTest {
 
         when(todoItemRepository.findByIdAndBoardIdAndDeletedAtIsNull(10L, 1L))
                 .thenReturn(Optional.of(item));
+        when(boardRepository.findByIdAndUserAndDeletedAtIsNull(1L, user))
+                .thenReturn(Optional.of(board));
 
-        todoItemService.deleteTodoItem(1L, 10L);
+        todoItemService.deleteTodoItem(1L, 10L, user);
 
         assertThat(item.getDeletedAt()).isNotNull();
         assertThat(item.getDeletedAt()).isBeforeOrEqualTo(LocalDateTime.now());
