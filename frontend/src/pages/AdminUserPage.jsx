@@ -6,11 +6,18 @@ import {
   Person as PersonIcon,
   Add,
 } from "@mui/icons-material";
-import { getUsersOnly, getAdminsOnly, createUser, searchUsers } from "../api/userAPI";
-import UserTable from "../components/user/UserTable";
+import {
+  getUsersOnly,
+  getAdminsOnly,
+  createUser,
+  searchUsers,
+} from "../api/userAPI";
+import UserTable from "../components/user/userTable";
 import SectionDivider from "../components/common/SectionDivider";
-import { SnackbarProvider, useSnackbar } from "notistack";
-import { useSortableTable } from "../hooks/useSortableTable.js"
+import { SnackbarProvider, useSnackbar, closeSnackbar } from "notistack";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import { useSortableTable } from "../hooks/useSortableTable.js";
 
 function AdminUserPageContent() {
   const [users, setUsers] = useState({ content: [], totalElements: 0 });
@@ -57,20 +64,21 @@ function AdminUserPageContent() {
     };
     fetchUsers();
   }, [
-      usersTable.page,
-      usersTable.rowsPerPage,
-      usersTable.sort,
-      searchQuery,
-      enqueueSnackbar]);
+    usersTable.page,
+    usersTable.rowsPerPage,
+    usersTable.sort,
+    searchQuery,
+    enqueueSnackbar,
+  ]);
 
   useEffect(() => {
     const fetchAdmins = async () => {
       setLoadingAdmins(true);
       try {
         const data = await getAdminsOnly({
-            page: adminsTable.page,
-            size: adminsTable.rowsPerPage,
-            sort: adminsTable.sort,
+          page: adminsTable.page,
+          size: adminsTable.rowsPerPage,
+          sort: adminsTable.sort,
         });
         setAdmins(data);
       } catch (error) {
@@ -82,10 +90,10 @@ function AdminUserPageContent() {
     };
     fetchAdmins();
   }, [
-      adminsTable.page,
-      adminsTable.rowsPerPage,
-      adminsTable.sort,
-      enqueueSnackbar,
+    adminsTable.page,
+    adminsTable.rowsPerPage,
+    adminsTable.sort,
+    enqueueSnackbar,
   ]);
 
   const handleCreate = async () => {
@@ -94,8 +102,10 @@ function AdminUserPageContent() {
       !newUser.firstName ||
       !newUser.lastName ||
       !newUser.password
-    )
+    ){
+      enqueueSnackbar("All fields are required", { variant: "warning" });
       return;
+    } 
 
     try {
       await createUser({
@@ -229,9 +239,9 @@ function AdminUserPageContent() {
           setLoadingAdmins(true);
           try {
             const data = await getAdminsOnly({
-                page: adminsTable.page,
-                size: adminsTable.rowsPerPage,
-                sort: adminsTable.sort,
+              page: adminsTable.page,
+              size: adminsTable.rowsPerPage,
+              sort: adminsTable.sort,
             });
             setAdmins(data);
           } finally {
@@ -292,6 +302,19 @@ export default function AdminUserPage() {
       maxSnack={3}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       autoHideDuration={3000}
+      action={(snackbarId) => (
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={(event) => {
+            event.stopPropagation();
+            closeSnackbar(snackbarId);
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      )}
     >
       <AdminUserPageContent />
     </SnackbarProvider>

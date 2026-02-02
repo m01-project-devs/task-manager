@@ -14,9 +14,8 @@ export default function TodoList({
   const [newDescription, setNewDescription] = useState("");
 
   const handleAddClick = () => {
-    if (!newTitle.trim()) return;
+    onAdd(newTitle, newDescription);
 
-    onAdd(newTitle.trim(), newDescription.trim());
     setNewTitle("");
     setNewDescription("");
   };

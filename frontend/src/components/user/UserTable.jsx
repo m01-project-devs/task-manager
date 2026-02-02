@@ -105,7 +105,7 @@ export default function UserTable({
   const confirmDelete = async () => {
     try {
       await deleteUser(selectedEmail);
-      enqueueSnackbar("User deleted", { variant: "success" });
+      enqueueSnackbar("User deleted", { variant: "warning" });
 
       setLocalUsers(prev => prev.filter(u => u.email !== selectedEmail));
       setConfirmOpen(false);
