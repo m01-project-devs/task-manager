@@ -17,7 +17,9 @@ import {
   updateBoard,
 } from "../api/boardAPI";
 import ConfirmDialog from "../components/common/ConfirmDialog";
-import { SnackbarProvider, useSnackbar } from "notistack";
+import { SnackbarProvider, useSnackbar, closeSnackbar } from "notistack";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 function BoardPageContent() {
   const [boards, setBoards] = useState([]);
@@ -57,7 +59,10 @@ function BoardPageContent() {
   );
 
   const handleAdd = async () => {
-    if (!newBoard.trim()) return;
+    if (!newBoard.trim()) {
+      enqueueSnackbar("Board name cannot be empty", { variant: "warning" });
+      return;
+    }
     try {
       await createBoard(newBoard.trim());
       enqueueSnackbar("Board added", { variant: "success" });
@@ -78,7 +83,7 @@ function BoardPageContent() {
     if (!selectedBoard) return;
     try {
       await deleteBoard(selectedBoard.id);
-      enqueueSnackbar("Board deleted", { variant: "error" });
+      enqueueSnackbar("Board deleted", { variant: "warning" });
       setConfirmOpen(false);
       setSelectedBoard(null);
       loadBoards(page, rowsPerPage);
@@ -201,6 +206,19 @@ export default function BoardPage() {
       maxSnack={3}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       autoHideDuration={3000}
+      action={(snackbarId) => (
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={(event) => {
+            event.stopPropagation();
+            closeSnackbar(snackbarId);
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      )}
     >
       <BoardPageContent />
     </SnackbarProvider>

@@ -7,6 +7,7 @@ import com.m01project.taskmanager.dto.response.BoardResponse;
 import com.m01project.taskmanager.exception.BoardNotFoundException;
 import com.m01project.taskmanager.exception.DuplicateBoardTitleException;
 import com.m01project.taskmanager.repository.BoardRepository;
+import com.m01project.taskmanager.repository.TodoItemRepository;
 import com.m01project.taskmanager.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
+    private final TodoItemRepository todoItemRepository;
 
     @Override
     @Transactional
@@ -51,6 +53,11 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository
                 .findByIdAndUserAndDeletedAtIsNull(boardId, user)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
+
+        // should also soft delete all related TodoItems related with this board too.
+        todoItemRepository.findByBoardAndDeletedAtIsNull(board).forEach(todoItem -> {
+            todoItem.setDeletedAt(LocalDateTime.now());
+        });
 
         board.setDeletedAt(LocalDateTime.now());
         board.setTitle(board.getTitle() + "-deleted-" + UUID.randomUUID());

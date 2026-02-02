@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         if (trimmedQuery.length() < 3){
             throw new IllegalArgumentException("Search text must be at least 3 characters.");
         }
-        return userRepository.search(trimmedQuery, pageable);
+        return userRepository.search(trimmedQuery, Role.USER, pageable);
     }
 
 }

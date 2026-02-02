@@ -6,11 +6,9 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import java.util.List;
-
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -27,9 +25,9 @@ WHERE u.deletedAt IS NULL AND
    LOWER(u.firstName) LIKE LOWER(CONCAT('%', :q, '%'))
    OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :q, '%'))
    OR LOWER(u.email) LIKE LOWER(CONCAT('%', :q, '%'))
-)
+) AND u.role = :role
 """)
-    Page<User> search(@Param("q") String q, Pageable pageable);
+    Page<User> search(@Param("q") String q, @Param("role") Role role, Pageable pageable);
 
     Page<User> findAllByDeletedAtIsNull(@NonNull Pageable pageable);
 }

@@ -65,7 +65,7 @@ function App() {
           }
         />
         <Route
-          path="/boards/:boardId"
+          path="/boards/:boardTitle"
           element={
             <ProtectedRoute>
               <HomeLayout>

@@ -30,7 +30,10 @@ export default function BoardList({ boards, onDelete, onSave }) {
             setEditingBoardId(null);
           }}
           onDelete={() => onDelete(board)}
-          onClick={() => (window.location.href = `/boards/${board.id}`)}
+          onClick={() => {
+            const slug = encodeURIComponent(board.name);
+            window.location.href = `/boards/${slug}`;
+          }}
         />
       ))}
     </Box>
