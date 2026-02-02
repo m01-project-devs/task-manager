@@ -4,8 +4,11 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Typography
+  Typography,
+  IconButton,
+  Box,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function ConfirmDialog({
   open,
@@ -16,7 +19,21 @@ export default function ConfirmDialog({
 }) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle sx={{ p: 2, pr: 5 }}>
+        {title}
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: "grey.500",
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
       <DialogContent>
         <Typography>{message}</Typography>

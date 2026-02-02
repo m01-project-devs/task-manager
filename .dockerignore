@@ -14,3 +14,4 @@ stop-docker.sh
 *.log
 .idea
 .vscode
+target/

@@ -14,14 +14,17 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
 
   const handleSave = () => {
     if (!title.trim()) return;
-    onUpdate(todo.id, title, description);
+    onUpdate(todo.id, title.trim(), description.trim());
     setIsEditing(false);
   };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", mb: 1, gap: 1 }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Checkbox checked={todo.completed} onChange={() => onToggle(todo.id)} />
+        <Checkbox
+          checked={todo.completed}
+          onChange={() => onToggle(todo.id)}
+        />
 
         {isEditing ? (
           <TextField
@@ -33,19 +36,26 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
           />
         ) : (
           <Typography
-            sx={{ flex: 1, textDecoration: todo.completed ? "line-through" : "none" }}
+            sx={{
+              flex: 1,
+              textDecoration: todo.completed ? "line-through" : "none",
+            }}
           >
-            {title}
+            {todo.title}
           </Typography>
         )}
 
-        <IconButton size="small" color="error" onClick={() => onDelete(todo.id)}>
+        <IconButton
+          size="small"
+          color="error"
+          onClick={() => onDelete(todo.id)}
+        >
           <DeleteIcon />
         </IconButton>
 
         {isEditing ? (
           <>
-            <IconButton size="small" onClick={handleSave}>
+            <IconButton size="small" color="primary" onClick={handleSave}>
               <SaveIcon />
             </IconButton>
             <IconButton size="small" onClick={() => setIsEditing(false)}>
@@ -70,9 +80,9 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
         />
       )}
 
-      {!isEditing && description && (
+      {!isEditing && todo.description && (
         <Typography sx={{ ml: 4, color: "text.secondary" }}>
-          {description}
+          {todo.description}
         </Typography>
       )}
     </Box>
