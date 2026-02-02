@@ -4,11 +4,13 @@ import com.m01project.emailsender.application.port.EmailMessage;
 import com.m01project.emailsender.application.port.EmailSender;
 import com.m01project.emailsender.domain.exception.EmailSendFailedException;
 import com.m01project.emailsender.infrastructure.config.EmailProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SmtpEmailSender implements EmailSender {
@@ -16,10 +18,13 @@ public class SmtpEmailSender implements EmailSender {
     private final JavaMailSender javaMailSender;
     private final EmailProperties properties;
 
+
     @Override
     public void send(EmailMessage message) {
         if (!properties.enabled()){
+            log.info("SMTP sending is disabled");
             return;
+
         }
 
         var mime = javaMailSender.createMimeMessage();

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -87,6 +88,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidRoleAssignmentException("admin users can not be deleted.");
         }
         user.setDeletedAt(LocalDateTime.now());
+        user.setEmail(user.getEmail() + "-deleted-" + UUID.randomUUID());
         userRepository.save(user);
     }
     @Override

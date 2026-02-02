@@ -21,10 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -40,9 +38,6 @@ class UserControllerMvcTest {
 
     @MockitoBean
     private UserService userService;
-
-//    @MockitoBean
-//    private JwtService jwtService;
 
     @MockitoBean
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -124,15 +119,15 @@ class UserControllerMvcTest {
         doNothing().when(userService).delete("delete@example.com");
 
         mockMvc.perform(delete("/api/users/delete@example.com"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
     void deleteUser_WhenUserNotExist() throws Exception {
-        doNothing().when(userService).delete("notFound@example.com");
+        doThrow(new ResourceNotFoundException("")).when(userService).delete("notFound@example.com");
 
         mockMvc.perform(delete("/api/users/notFound@example.com"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNotFound());
     }
 
     @Test

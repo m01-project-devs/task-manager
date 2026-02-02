@@ -9,6 +9,7 @@ export default function TodoList({
   onToggle,
   onDelete,
   onUpdate,
+  disabled
 }) {
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -28,6 +29,7 @@ export default function TodoList({
           label="New Todo Title"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
+          disabled={disabled}
           fullWidth
         />
 
@@ -45,6 +47,7 @@ export default function TodoList({
           onClick={handleAddClick}
           startIcon={<Add />}
           sx={{ alignSelf: "flex-end" }}
+          disabled={disabled}
         >
           Add
         </Button>
@@ -58,6 +61,7 @@ export default function TodoList({
           onToggle={onToggle}
           onDelete={onDelete}
           onUpdate={onUpdate}
+          disabled={disabled}
         />
       ))}
     </Box>

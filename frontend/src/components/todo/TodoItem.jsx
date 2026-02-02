@@ -5,7 +5,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 
-export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
+export default function TodoItem({ todo, onToggle, onDelete, onUpdate, disabled }) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title);
   const [description, setDescription] = useState(todo.description || "");
@@ -24,6 +24,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
         <Checkbox
           checked={todo.completed}
           onChange={() => onToggle(todo.id)}
+          disabled={disabled}
         />
 
         {isEditing ? (
@@ -49,6 +50,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
           size="small"
           color="error"
           onClick={() => onDelete(todo.id)}
+          disabled={disabled}
         >
           <DeleteIcon />
         </IconButton>
