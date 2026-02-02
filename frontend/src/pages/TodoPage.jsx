@@ -17,6 +17,7 @@ function TodoPageContent() {
   const [todos, setTodos] = useState([]);
   const [currentBoardId, setCurrentBoardId] = useState(null);
 
+  const [loading, setLoading] = useState(true);
   const [todoToDelete, setTodoToDelete] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -24,6 +25,7 @@ function TodoPageContent() {
 
   const loadTodos = async () => {
     try {
+      setLoading(true);
       const boardsData = await getBoards(0, 1000);
       const board = boardsData.content.find((b) => b.name === decodedTitle);
       if (!board) throw new Error("Board not found");
@@ -35,6 +37,8 @@ function TodoPageContent() {
     } catch (err) {
       console.error(err);
       enqueueSnackbar("Failed to load todos", { variant: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,6 +171,7 @@ function TodoPageContent() {
         onToggle={handleToggle}
         onDelete={handleRequestDelete} 
         onUpdate={handleUpdate}
+        disabled={loading}
       />
 
       <ConfirmDialog
