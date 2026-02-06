@@ -69,7 +69,7 @@ public class UserController {
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable @Valid String email) {
         userService.delete(email);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }
